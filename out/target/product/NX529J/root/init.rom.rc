@@ -1,0 +1,27 @@
+
+#ZTEMT ADD for NBSecurity
+#service nubia_rt /system/bin/security_process /system/framework cn.nubia.security.core.service.ServiceRun
+#    class main
+#    disabled
+#
+#on property:sys.boot_completed=1
+#	start nubia_rt
+#
+#on property:sys.boot_completed=0
+#	stop nubia_rt
+#
+#END
+
+#Nubia add start, for woodpeckerd
+service woodpeckerd /system/bin/woodpeckerd
+    class main
+    socket woodpeckerd stream 0666 root system
+    seclabel u:r:woodpeckerd:s0
+#Nubia add end
+
+# for ScreenRecord ------
+service screen_record /system/bin/nubia_screen_record
+    class main
+    user root
+    group sdcard_rw sdcard_r sdcard_all root shell
+# ZTEMT END -------------

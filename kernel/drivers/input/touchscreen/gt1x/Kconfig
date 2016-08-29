@@ -1,0 +1,28 @@
+#
+# Goodix GT1X Touchscreen driver
+#
+
+menuconfig ZTEMT_TOUCHSCREEN_GT1X
+	bool "ZTEMT_TOUCHSCREEN_GT1X"
+	help
+	  Say Y here, and a list of supported touchscreens will be displayed.
+	  This option doesn't affect the kernel.
+
+	  If unsure, say Y.
+
+if ZTEMT_TOUCHSCREEN_GT1X
+
+config ZTEMT_GT1X_TOUCHSCREEN_DRIVER
+	tristate "Goodix GT1X touchpanel driver"
+	depends on ZTEMT_TOUCHSCREEN_GT1X
+	default n
+	help
+	  This is the main file for touchpanel driver for Goodix GT1X
+	  touchscreens.
+
+	  Say Y here if you have a Goodix GT1X touchscreen connected
+	  to your system.
+
+	  If unsure, say N.
+
+endif

@@ -1,0 +1,1 @@
+obj-$(CONFIG_ZTEMT_SENSORS_FP_ET310) += et310-spi.o et310.o scroll.o egis_navigate_algorithm.o

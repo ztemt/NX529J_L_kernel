@@ -1,0 +1,1 @@
+obj-$(CONFIG_ZTEMT_SENSORS_FP_ET310) += et310_platform.o

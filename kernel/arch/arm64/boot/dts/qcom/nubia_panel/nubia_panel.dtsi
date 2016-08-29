@@ -1,0 +1,3 @@
+#include "zte-dsi-panel-lead-hx8399a-1080p-5p5-video.dtsi"
+#include "zte-dsi-panel-tianma-otm1901a-1080p-5p5-video.dtsi"
+#include "zte-dsi-sharp-panel-nt35595-1080p-5p0-command.dtsi"

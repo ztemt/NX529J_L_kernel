@@ -1,0 +1,16 @@
+config ZTEMT_SENSORS_FP_GF318M
+	tristate "ztemt sensors fp gf318m"
+	depends on ZTEMT_SENSORS_FP
+	default n
+	help
+	  This is the main file for fingerprint driver for gf318m.
+	  Say Y here if you have a gf318m fingerprint connected
+	  to your system.
+
+config ZTEMT_N940_FP_COMPATIBLE
+	tristate "ztemt sensors fp gf318m N940 compatible"
+	default n
+
+config ZTEMT_FP_COMPATIBLE
+	tristate "ztemt sensors fp gf318m compatible"
+	default n

@@ -1,0 +1,25 @@
+#config ZTEMT_SENSORS_FP_ET310
+#	tristate "ztemt sensors fp et310"
+#	default n
+#	help
+#	  This is the main file for fingerprint driver for et310.
+#	  Say Y here if you have a et310 fingerprint connected
+#	  to your system.
+
+menuconfig ZTEMT_SENSORS_FP_ET310
+	tristate "ztemt sensors fp et310"
+	default n
+	help
+	  This is the main file for fingerprint driver for et310.
+	  Say Y here if you have a et310 fingerprint connected
+	  to your system.
+
+if ZTEMT_SENSORS_FP_ET310
+
+config ZTEMT_SENSORS_FP_ET310_CONTROL_BY_AP
+	bool "Enable Spi by AP"
+	default n
+	help
+	  Say Y here to enable spi by AP.
+	  Say N here to enable spi by TZ.
+endif

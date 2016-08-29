@@ -1,0 +1,49 @@
+
+qcom,zte_nx529_2830mah {
+	/* #2290426_ZTE_NX529J_2830mAh_averaged_MasterSlave_Dec30th2015*/
+	qcom,max-voltage-uv = <4400000>;
+	qcom,nom-batt-capacity-mah = <2830>;
+	qcom,batt-id-kohm = <0>;
+	qcom,battery-beta = <3435>;
+	qcom,battery-type = "zte_nx529_2830mah";
+	qcom,chg-rslow-comp-c1 = <2671021>;
+	qcom,chg-rslow-comp-c2 = <3063965>;
+	qcom,chg-rs-to-rslow = <1736755>;
+	qcom,chg-rslow-comp-thr = <0x99>;
+	qcom,checksum = <0xBB9B>;
+	qcom,gui-version = "PMI8950GUI - 2.0.0.15";
+	qcom,fg-profile-data = [
+		 F5 83 AD 7D 
+		 D3 81 65 7C 
+		 55 83 FC 56 
+		 94 81 8B 8C 
+		 20 82 36 98 
+		 C8 B4 4A BB 
+		 5E 19 F4 83 
+		 2C 7D 59 81 
+		 C8 77 5D 83 
+		 40 5D 50 83 
+		 D8 8E 49 82 
+		 6F 98 EC B5 
+		 4D C1 58 15 
+		 1F 0B BC 58 
+		 14 70 71 FD 
+		 37 46 8C 46 
+		 69 49 00 00 
+		 08 3F C5 38 
+		 5A 45 00 00 
+		 00 00 00 00 
+		 00 00 00 00 
+		 44 73 E7 71 
+		 9C 69 11 83 
+		 9E 6D 84 4D 
+		 D5 52 34 78 
+		 34 6C C7 5C 
+		 FE 5A 23 B1 
+		 1B 06 6B 7A 
+		 6D A0 71 0C 
+		 28 00 FF 36 
+		 F0 11 30 03 
+		 00 00 00 0C 
+	];
+};

@@ -1,0 +1,8560 @@
+Terminals unused in grammar
+
+   CLONE
+
+
+语法
+
+    0 $accept: policy $end
+
+    1 policy: base_policy
+    2       | module_policy
+
+    3 $@1: /* empty */
+
+    4 $@2: /* empty */
+
+    5 $@3: /* empty */
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    7 classes: class_def
+    8        | classes class_def
+
+    9 class_def: CLASS identifier
+
+   10 initial_sids: initial_sid_def
+   11             | initial_sids initial_sid_def
+
+   12 initial_sid_def: SID identifier
+
+   13 access_vectors: opt_common_perms av_perms
+
+   14 opt_common_perms: common_perms
+   15                 | /* empty */
+
+   16 common_perms: common_perms_def
+   17             | common_perms common_perms_def
+
+   18 common_perms_def: COMMON identifier '{' identifier_list '}'
+
+   19 av_perms: av_perms_def
+   20         | av_perms av_perms_def
+
+   21 av_perms_def: CLASS identifier '{' identifier_list '}'
+   22             | CLASS identifier INHERITS identifier
+   23             | CLASS identifier INHERITS identifier '{' identifier_list '}'
+
+   24 opt_default_rules: default_rules
+   25                  | /* empty */
+
+   26 default_rules: default_user_def
+   27              | default_role_def
+   28              | default_type_def
+   29              | default_range_def
+   30              | default_rules default_user_def
+   31              | default_rules default_role_def
+   32              | default_rules default_type_def
+   33              | default_rules default_range_def
+
+   34 default_user_def: DEFAULT_USER names SOURCE ';'
+   35                 | DEFAULT_USER names TARGET ';'
+
+   36 default_role_def: DEFAULT_ROLE names SOURCE ';'
+   37                 | DEFAULT_ROLE names TARGET ';'
+
+   38 default_type_def: DEFAULT_TYPE names SOURCE ';'
+   39                 | DEFAULT_TYPE names TARGET ';'
+
+   40 default_range_def: DEFAULT_RANGE names SOURCE LOW ';'
+   41                  | DEFAULT_RANGE names SOURCE HIGH ';'
+   42                  | DEFAULT_RANGE names SOURCE LOW_HIGH ';'
+   43                  | DEFAULT_RANGE names TARGET LOW ';'
+   44                  | DEFAULT_RANGE names TARGET HIGH ';'
+   45                  | DEFAULT_RANGE names TARGET LOW_HIGH ';'
+
+   46 opt_mls: mls
+   47        | /* empty */
+
+   48 mls: sensitivities dominance opt_categories levels mlspolicy
+
+   49 sensitivities: sensitivity_def
+   50              | sensitivities sensitivity_def
+
+   51 sensitivity_def: SENSITIVITY identifier alias_def ';'
+   52                | SENSITIVITY identifier ';'
+
+   53 alias_def: ALIAS names
+
+   54 dominance: DOMINANCE identifier
+   55          | DOMINANCE '{' identifier_list '}'
+
+   56 opt_categories: categories
+   57               | /* empty */
+
+   58 categories: category_def
+   59           | categories category_def
+
+   60 category_def: CATEGORY identifier alias_def ';'
+   61             | CATEGORY identifier ';'
+
+   62 levels: level_def
+   63       | levels level_def
+
+   64 level_def: LEVEL identifier ':' id_comma_list ';'
+   65          | LEVEL identifier ';'
+
+   66 mlspolicy: mlspolicy_decl
+   67          | mlspolicy mlspolicy_decl
+
+   68 mlspolicy_decl: mlsconstraint_def
+   69               | mlsvalidatetrans_def
+
+   70 mlsconstraint_def: MLSCONSTRAIN names names cexpr ';'
+
+   71 mlsvalidatetrans_def: MLSVALIDATETRANS names cexpr ';'
+
+   72 te_rbac: te_rbac_decl
+   73        | te_rbac te_rbac_decl
+
+   74 te_rbac_decl: te_decl
+   75             | rbac_decl
+   76             | cond_stmt_def
+   77             | optional_block
+   78             | policycap_def
+   79             | ';'
+
+   80 rbac_decl: attribute_role_def
+   81          | role_type_def
+   82          | role_dominance
+   83          | role_trans_def
+   84          | role_allow_def
+   85          | roleattribute_def
+   86          | role_attr_def
+
+   87 te_decl: attribute_def
+   88        | type_def
+   89        | typealias_def
+   90        | typeattribute_def
+   91        | typebounds_def
+   92        | bool_def
+   93        | tunable_def
+   94        | transition_def
+   95        | range_trans_def
+   96        | te_avtab_def
+   97        | permissive_def
+
+   98 attribute_def: ATTRIBUTE identifier ';'
+
+   99 type_def: TYPE identifier alias_def opt_attr_list ';'
+  100         | TYPE identifier opt_attr_list ';'
+
+  101 typealias_def: TYPEALIAS identifier alias_def ';'
+
+  102 typeattribute_def: TYPEATTRIBUTE identifier id_comma_list ';'
+
+  103 typebounds_def: TYPEBOUNDS identifier id_comma_list ';'
+
+  104 opt_attr_list: ',' id_comma_list
+  105              | /* empty */
+
+  106 bool_def: BOOL identifier bool_val ';'
+
+  107 tunable_def: TUNABLE identifier bool_val ';'
+
+  108 bool_val: CTRUE
+  109         | CFALSE
+
+  110 cond_stmt_def: IF cond_expr '{' cond_pol_list '}' cond_else
+
+  111 cond_else: ELSE '{' cond_pol_list '}'
+  112          | /* empty */
+
+  113 cond_expr: '(' cond_expr ')'
+  114          | NOT cond_expr
+  115          | cond_expr AND cond_expr
+  116          | cond_expr OR cond_expr
+  117          | cond_expr XOR cond_expr
+  118          | cond_expr EQUALS cond_expr
+  119          | cond_expr NOTEQUAL cond_expr
+  120          | cond_expr_prim
+
+  121 cond_expr_prim: identifier
+
+  122 cond_pol_list: cond_pol_list cond_rule_def
+  123              | /* empty */
+
+  124 cond_rule_def: cond_transition_def
+  125              | cond_te_avtab_def
+  126              | require_block
+
+  127 cond_transition_def: TYPE_TRANSITION names names ':' names identifier filename ';'
+  128                    | TYPE_TRANSITION names names ':' names identifier ';'
+  129                    | TYPE_MEMBER names names ':' names identifier ';'
+  130                    | TYPE_CHANGE names names ':' names identifier ';'
+
+  131 cond_te_avtab_def: cond_allow_def
+  132                  | cond_auditallow_def
+  133                  | cond_auditdeny_def
+  134                  | cond_dontaudit_def
+
+  135 cond_allow_def: ALLOW names names ':' names names ';'
+
+  136 cond_auditallow_def: AUDITALLOW names names ':' names names ';'
+
+  137 cond_auditdeny_def: AUDITDENY names names ':' names names ';'
+
+  138 cond_dontaudit_def: DONTAUDIT names names ':' names names ';'
+
+  139 transition_def: TYPE_TRANSITION names names ':' names identifier filename ';'
+  140               | TYPE_TRANSITION names names ':' names identifier ';'
+  141               | TYPE_MEMBER names names ':' names identifier ';'
+  142               | TYPE_CHANGE names names ':' names identifier ';'
+
+  143 range_trans_def: RANGE_TRANSITION names names mls_range_def ';'
+  144                | RANGE_TRANSITION names names ':' names mls_range_def ';'
+
+  145 te_avtab_def: allow_def
+  146             | auditallow_def
+  147             | auditdeny_def
+  148             | dontaudit_def
+  149             | neverallow_def
+
+  150 allow_def: ALLOW names names ':' names names ';'
+
+  151 auditallow_def: AUDITALLOW names names ':' names names ';'
+
+  152 auditdeny_def: AUDITDENY names names ':' names names ';'
+
+  153 dontaudit_def: DONTAUDIT names names ':' names names ';'
+
+  154 neverallow_def: NEVERALLOW names names ':' names names ';'
+
+  155 attribute_role_def: ATTRIBUTE_ROLE identifier ';'
+
+  156 role_type_def: ROLE identifier TYPES names ';'
+
+  157 role_attr_def: ROLE identifier opt_attr_list ';'
+
+  158 role_dominance: DOMINANCE '{' roles '}'
+
+  159 role_trans_def: ROLE_TRANSITION names names identifier ';'
+  160               | ROLE_TRANSITION names names ':' names identifier ';'
+
+  161 role_allow_def: ALLOW names names ';'
+
+  162 roles: role_def
+  163      | roles role_def
+
+  164 role_def: ROLE identifier_push ';'
+  165         | ROLE identifier_push '{' roles '}'
+
+  166 roleattribute_def: ROLEATTRIBUTE identifier id_comma_list ';'
+
+  167 opt_constraints: constraints
+  168                | /* empty */
+
+  169 constraints: constraint_decl
+  170            | constraints constraint_decl
+
+  171 constraint_decl: constraint_def
+  172                | validatetrans_def
+
+  173 constraint_def: CONSTRAIN names names cexpr ';'
+
+  174 validatetrans_def: VALIDATETRANS names cexpr ';'
+
+  175 cexpr: '(' cexpr ')'
+  176      | NOT cexpr
+  177      | cexpr AND cexpr
+  178      | cexpr OR cexpr
+  179      | cexpr_prim
+
+  180 cexpr_prim: U1 op U2
+  181           | R1 role_mls_op R2
+  182           | T1 op T2
+
+  183 $@4: /* empty */
+
+  184 cexpr_prim: U1 op $@4 names_push
+
+  185 $@5: /* empty */
+
+  186 cexpr_prim: U2 op $@5 names_push
+
+  187 $@6: /* empty */
+
+  188 cexpr_prim: U3 op $@6 names_push
+
+  189 $@7: /* empty */
+
+  190 cexpr_prim: R1 op $@7 names_push
+
+  191 $@8: /* empty */
+
+  192 cexpr_prim: R2 op $@8 names_push
+
+  193 $@9: /* empty */
+
+  194 cexpr_prim: R3 op $@9 names_push
+
+  195 $@10: /* empty */
+
+  196 cexpr_prim: T1 op $@10 names_push
+
+  197 $@11: /* empty */
+
+  198 cexpr_prim: T2 op $@11 names_push
+
+  199 $@12: /* empty */
+
+  200 cexpr_prim: T3 op $@12 names_push
+  201           | SAMEUSER
+
+  202 $@13: /* empty */
+
+  203 cexpr_prim: SOURCE ROLE $@13 names_push
+
+  204 $@14: /* empty */
+
+  205 cexpr_prim: TARGET ROLE $@14 names_push
+  206           | ROLE role_mls_op
+
+  207 $@15: /* empty */
+
+  208 cexpr_prim: SOURCE TYPE $@15 names_push
+
+  209 $@16: /* empty */
+
+  210 cexpr_prim: TARGET TYPE $@16 names_push
+  211           | L1 role_mls_op L2
+  212           | L1 role_mls_op H2
+  213           | H1 role_mls_op L2
+  214           | H1 role_mls_op H2
+  215           | L1 role_mls_op H1
+  216           | L2 role_mls_op H2
+
+  217 op: EQUALS
+  218   | NOTEQUAL
+
+  219 role_mls_op: op
+  220            | DOM
+  221            | DOMBY
+  222            | INCOMP
+
+  223 users: user_def
+  224      | users user_def
+
+  225 user_def: USER identifier ROLES names opt_mls_user ';'
+
+  226 opt_mls_user: LEVEL mls_level_def RANGE mls_range_def
+  227             | /* empty */
+
+  228 initial_sid_contexts: initial_sid_context_def
+  229                     | initial_sid_contexts initial_sid_context_def
+
+  230 initial_sid_context_def: SID identifier security_context_def
+
+  231 opt_dev_contexts: dev_contexts
+  232                 | /* empty */
+
+  233 dev_contexts: dev_context_def
+  234             | dev_contexts dev_context_def
+
+  235 dev_context_def: pirq_context_def
+  236                | iomem_context_def
+  237                | ioport_context_def
+  238                | pci_context_def
+
+  239 pirq_context_def: PIRQCON number security_context_def
+
+  240 iomem_context_def: IOMEMCON number security_context_def
+  241                  | IOMEMCON number '-' number security_context_def
+
+  242 ioport_context_def: IOPORTCON number security_context_def
+  243                   | IOPORTCON number '-' number security_context_def
+
+  244 pci_context_def: PCIDEVICECON number security_context_def
+
+  245 opt_fs_contexts: fs_contexts
+  246                | /* empty */
+
+  247 fs_contexts: fs_context_def
+  248            | fs_contexts fs_context_def
+
+  249 fs_context_def: FSCON number number security_context_def security_context_def
+
+  250 net_contexts: opt_port_contexts opt_netif_contexts opt_node_contexts
+
+  251 opt_port_contexts: port_contexts
+  252                  | /* empty */
+
+  253 port_contexts: port_context_def
+  254              | port_contexts port_context_def
+
+  255 port_context_def: PORTCON identifier number security_context_def
+  256                 | PORTCON identifier number '-' number security_context_def
+
+  257 opt_netif_contexts: netif_contexts
+  258                   | /* empty */
+
+  259 netif_contexts: netif_context_def
+  260               | netif_contexts netif_context_def
+
+  261 netif_context_def: NETIFCON identifier security_context_def security_context_def
+
+  262 opt_node_contexts: node_contexts
+  263                  | /* empty */
+
+  264 node_contexts: node_context_def
+  265              | node_contexts node_context_def
+
+  266 node_context_def: NODECON ipv4_addr_def ipv4_addr_def security_context_def
+  267                 | NODECON ipv6_addr ipv6_addr security_context_def
+
+  268 opt_fs_uses: fs_uses
+  269            | /* empty */
+
+  270 fs_uses: fs_use_def
+  271        | fs_uses fs_use_def
+
+  272 fs_use_def: FSUSEXATTR filesystem security_context_def ';'
+  273           | FSUSETASK identifier security_context_def ';'
+  274           | FSUSETRANS identifier security_context_def ';'
+
+  275 opt_genfs_contexts: genfs_contexts
+  276                   | /* empty */
+
+  277 genfs_contexts: genfs_context_def
+  278               | genfs_contexts genfs_context_def
+
+  279 genfs_context_def: GENFSCON filesystem path '-' identifier security_context_def
+
+  280 $@17: /* empty */
+
+  281 genfs_context_def: GENFSCON filesystem path '-' '-' $@17 security_context_def
+  282                  | GENFSCON filesystem path security_context_def
+
+  283 ipv4_addr_def: IPV4_ADDR
+
+  284 security_context_def: identifier ':' identifier ':' identifier opt_mls_range_def
+
+  285 opt_mls_range_def: ':' mls_range_def
+  286                  | /* empty */
+
+  287 mls_range_def: mls_level_def '-' mls_level_def
+  288              | mls_level_def
+
+  289 mls_level_def: identifier ':' id_comma_list
+  290              | identifier
+
+  291 id_comma_list: identifier
+  292              | id_comma_list ',' identifier
+
+  293 tilde: '~'
+
+  294 asterisk: '*'
+
+  295 names: identifier
+  296      | nested_id_set
+  297      | asterisk
+  298      | tilde identifier
+  299      | tilde nested_id_set
+
+  300 $@18: /* empty */
+
+  301 names: identifier '-' $@18 identifier
+
+  302 tilde_push: tilde
+
+  303 asterisk_push: asterisk
+
+  304 names_push: identifier_push
+  305           | '{' identifier_list_push '}'
+  306           | asterisk_push
+  307           | tilde_push identifier_push
+  308           | tilde_push '{' identifier_list_push '}'
+
+  309 identifier_list_push: identifier_push
+  310                     | identifier_list_push identifier_push
+
+  311 identifier_push: IDENTIFIER
+
+  312 identifier_list: identifier
+  313                | identifier_list identifier
+
+  314 nested_id_set: '{' nested_id_list '}'
+
+  315 nested_id_list: nested_id_element
+  316               | nested_id_list nested_id_element
+
+  317 nested_id_element: identifier
+
+  318 $@19: /* empty */
+
+  319 nested_id_element: '-' $@19 identifier
+  320                  | nested_id_set
+
+  321 identifier: IDENTIFIER
+
+  322 filesystem: FILESYSTEM
+  323           | IDENTIFIER
+
+  324 path: PATH
+
+  325 filename: FILENAME
+
+  326 number: NUMBER
+
+  327 ipv6_addr: IPV6_ADDR
+
+  328 policycap_def: POLICYCAP identifier ';'
+
+  329 permissive_def: PERMISSIVE identifier ';'
+
+  330 module_policy: module_def avrules_block
+
+  331 module_def: MODULE identifier version_identifier ';'
+
+  332 version_identifier: VERSION_IDENTIFIER
+  333                   | number
+  334                   | ipv4_addr_def
+
+  335 avrules_block: avrule_decls avrule_user_defs
+
+  336 avrule_decls: avrule_decls avrule_decl
+  337             | avrule_decl
+
+  338 avrule_decl: rbac_decl
+  339            | te_decl
+  340            | cond_stmt_def
+  341            | require_block
+  342            | optional_block
+  343            | ';'
+
+  344 require_block: REQUIRE '{' require_list '}'
+
+  345 require_list: require_list require_decl
+  346             | require_decl
+
+  347 require_decl: require_class ';'
+  348             | require_decl_def require_id_list ';'
+
+  349 require_class: CLASS identifier names
+
+  350 require_decl_def: ROLE
+  351                 | TYPE
+  352                 | ATTRIBUTE
+  353                 | ATTRIBUTE_ROLE
+  354                 | USER
+  355                 | BOOL
+  356                 | TUNABLE
+  357                 | SENSITIVITY
+  358                 | CATEGORY
+
+  359 require_id_list: identifier
+  360                | require_id_list ',' identifier
+
+  361 $@20: /* empty */
+
+  362 optional_block: optional_decl '{' avrules_block '}' $@20 optional_else
+
+  363 optional_else: else_decl '{' avrules_block '}'
+  364              | /* empty */
+
+  365 optional_decl: OPTIONAL
+
+  366 else_decl: ELSE
+
+  367 avrule_user_defs: user_def avrule_user_defs
+  368                 | /* empty */
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 113 175
+')' (41) 113 175
+'*' (42) 294
+',' (44) 104 292 360
+'-' (45) 241 243 256 279 281 287 301 319
+':' (58) 64 127 128 129 130 135 136 137 138 139 140 141 142 144 150
+    151 152 153 154 160 284 285 289
+';' (59) 34 35 36 37 38 39 40 41 42 43 44 45 51 52 60 61 64 65 70 71
+    79 98 99 100 101 102 103 106 107 127 128 129 130 135 136 137 138
+    139 140 141 142 143 144 150 151 152 153 154 155 156 157 159 160
+    161 164 166 173 174 225 272 273 274 328 329 331 343 347 348
+'{' (123) 18 21 23 55 110 111 158 165 305 308 314 344 362 363
+'}' (125) 18 21 23 55 110 111 158 165 305 308 314 344 362 363
+'~' (126) 293
+error (256)
+PATH (258) 324
+FILENAME (259) 325
+CLONE (260)
+COMMON (261) 18
+CLASS (262) 9 21 22 23 349
+CONSTRAIN (263) 173
+VALIDATETRANS (264) 174
+INHERITS (265) 22 23
+SID (266) 12 230
+ROLE (267) 156 157 164 165 203 205 206 350
+ROLEATTRIBUTE (268) 166
+ATTRIBUTE_ROLE (269) 155 353
+ROLES (270) 225
+TYPEALIAS (271) 101
+TYPEATTRIBUTE (272) 102
+TYPEBOUNDS (273) 103
+TYPE (274) 99 100 208 210 351
+TYPES (275) 156
+ALIAS (276) 53
+ATTRIBUTE (277) 98 352
+BOOL (278) 106 355
+TUNABLE (279) 107 356
+IF (280) 110
+ELSE (281) 111 366
+TYPE_TRANSITION (282) 127 128 139 140
+TYPE_MEMBER (283) 129 141
+TYPE_CHANGE (284) 130 142
+ROLE_TRANSITION (285) 159 160
+RANGE_TRANSITION (286) 143 144
+SENSITIVITY (287) 51 52 357
+DOMINANCE (288) 54 55 158
+DOM (289) 220
+DOMBY (290) 221
+INCOMP (291) 222
+CATEGORY (292) 60 61 358
+LEVEL (293) 64 65 226
+RANGE (294) 226
+MLSCONSTRAIN (295) 70
+MLSVALIDATETRANS (296) 71
+USER (297) 225 354
+NEVERALLOW (298) 154
+ALLOW (299) 135 150 161
+AUDITALLOW (300) 136 151
+AUDITDENY (301) 137 152
+DONTAUDIT (302) 138 153
+SOURCE (303) 34 36 38 40 41 42 203 208
+TARGET (304) 35 37 39 43 44 45 205 210
+SAMEUSER (305) 201
+FSCON (306) 249
+PORTCON (307) 255 256
+NETIFCON (308) 261
+NODECON (309) 266 267
+PIRQCON (310) 239
+IOMEMCON (311) 240 241
+IOPORTCON (312) 242 243
+PCIDEVICECON (313) 244
+FSUSEXATTR (314) 272
+FSUSETASK (315) 273
+FSUSETRANS (316) 274
+GENFSCON (317) 279 281 282
+U1 (318) 180 184
+U2 (319) 180 186
+U3 (320) 188
+R1 (321) 181 190
+R2 (322) 181 192
+R3 (323) 194
+T1 (324) 182 196
+T2 (325) 182 198
+T3 (326) 200
+L1 (327) 211 212 215
+L2 (328) 211 213 216
+H1 (329) 213 214 215
+H2 (330) 212 214 216
+NOT (331) 114 176
+AND (332) 115 177
+OR (333) 116 178
+XOR (334) 117
+CTRUE (335) 108
+CFALSE (336) 109
+IDENTIFIER (337) 311 321 323
+NUMBER (338) 326
+EQUALS (339) 118 217
+NOTEQUAL (340) 119 218
+IPV4_ADDR (341) 283
+IPV6_ADDR (342) 327
+MODULE (343) 331
+VERSION_IDENTIFIER (344) 332
+REQUIRE (345) 344
+OPTIONAL (346) 365
+POLICYCAP (347) 328
+PERMISSIVE (348) 329
+FILESYSTEM (349) 322
+DEFAULT_USER (350) 34 35
+DEFAULT_ROLE (351) 36 37
+DEFAULT_TYPE (352) 38 39
+DEFAULT_RANGE (353) 40 41 42 43 44 45
+LOW_HIGH (354) 42 45
+LOW (355) 40 43
+HIGH (356) 41 44
+
+
+Nonterminals, with rules where they appear
+
+$accept (112)
+    左： 0
+policy (113)
+    左： 1 2, 右： 0
+base_policy (114)
+    左： 6, 右： 1
+$@1 (115)
+    左： 3, 右： 6
+$@2 (116)
+    左： 4, 右： 6
+$@3 (117)
+    左： 5, 右： 6
+classes (118)
+    左： 7 8, 右： 6 8
+class_def (119)
+    左： 9, 右： 7 8
+initial_sids (120)
+    左： 10 11, 右： 6 11
+initial_sid_def (121)
+    左： 12, 右： 10 11
+access_vectors (122)
+    左： 13, 右： 6
+opt_common_perms (123)
+    左： 14 15, 右： 13
+common_perms (124)
+    左： 16 17, 右： 14 17
+common_perms_def (125)
+    左： 18, 右： 16 17
+av_perms (126)
+    左： 19 20, 右： 13 20
+av_perms_def (127)
+    左： 21 22 23, 右： 19 20
+opt_default_rules (128)
+    左： 24 25, 右： 6
+default_rules (129)
+    左： 26 27 28 29 30 31 32 33, 右： 24 30 31 32 33
+default_user_def (130)
+    左： 34 35, 右： 26 30
+default_role_def (131)
+    左： 36 37, 右： 27 31
+default_type_def (132)
+    左： 38 39, 右： 28 32
+default_range_def (133)
+    左： 40 41 42 43 44 45, 右： 29 33
+opt_mls (134)
+    左： 46 47, 右： 6
+mls (135)
+    左： 48, 右： 46
+sensitivities (136)
+    左： 49 50, 右： 48 50
+sensitivity_def (137)
+    左： 51 52, 右： 49 50
+alias_def (138)
+    左： 53, 右： 51 60 99 101
+dominance (139)
+    左： 54 55, 右： 48
+opt_categories (140)
+    左： 56 57, 右： 48
+categories (141)
+    左： 58 59, 右： 56 59
+category_def (142)
+    左： 60 61, 右： 58 59
+levels (143)
+    左： 62 63, 右： 48 63
+level_def (144)
+    左： 64 65, 右： 62 63
+mlspolicy (145)
+    左： 66 67, 右： 48 67
+mlspolicy_decl (146)
+    左： 68 69, 右： 66 67
+mlsconstraint_def (147)
+    左： 70, 右： 68
+mlsvalidatetrans_def (148)
+    左： 71, 右： 69
+te_rbac (149)
+    左： 72 73, 右： 6 73
+te_rbac_decl (150)
+    左： 74 75 76 77 78 79, 右： 72 73
+rbac_decl (151)
+    左： 80 81 82 83 84 85 86, 右： 75 338
+te_decl (152)
+    左： 87 88 89 90 91 92 93 94 95 96 97, 右： 74 339
+attribute_def (153)
+    左： 98, 右： 87
+type_def (154)
+    左： 99 100, 右： 88
+typealias_def (155)
+    左： 101, 右： 89
+typeattribute_def (156)
+    左： 102, 右： 90
+typebounds_def (157)
+    左： 103, 右： 91
+opt_attr_list (158)
+    左： 104 105, 右： 99 100 157
+bool_def (159)
+    左： 106, 右： 92
+tunable_def (160)
+    左： 107, 右： 93
+bool_val (161)
+    左： 108 109, 右： 106 107
+cond_stmt_def (162)
+    左： 110, 右： 76 340
+cond_else (163)
+    左： 111 112, 右： 110
+cond_expr (164)
+    左： 113 114 115 116 117 118 119 120, 右： 110 113 114 115
+    116 117 118 119
+cond_expr_prim (165)
+    左： 121, 右： 120
+cond_pol_list (166)
+    左： 122 123, 右： 110 111 122
+cond_rule_def (167)
+    左： 124 125 126, 右： 122
+cond_transition_def (168)
+    左： 127 128 129 130, 右： 124
+cond_te_avtab_def (169)
+    左： 131 132 133 134, 右： 125
+cond_allow_def (170)
+    左： 135, 右： 131
+cond_auditallow_def (171)
+    左： 136, 右： 132
+cond_auditdeny_def (172)
+    左： 137, 右： 133
+cond_dontaudit_def (173)
+    左： 138, 右： 134
+transition_def (174)
+    左： 139 140 141 142, 右： 94
+range_trans_def (175)
+    左： 143 144, 右： 95
+te_avtab_def (176)
+    左： 145 146 147 148 149, 右： 96
+allow_def (177)
+    左： 150, 右： 145
+auditallow_def (178)
+    左： 151, 右： 146
+auditdeny_def (179)
+    左： 152, 右： 147
+dontaudit_def (180)
+    左： 153, 右： 148
+neverallow_def (181)
+    左： 154, 右： 149
+attribute_role_def (182)
+    左： 155, 右： 80
+role_type_def (183)
+    左： 156, 右： 81
+role_attr_def (184)
+    左： 157, 右： 86
+role_dominance (185)
+    左： 158, 右： 82
+role_trans_def (186)
+    左： 159 160, 右： 83
+role_allow_def (187)
+    左： 161, 右： 84
+roles (188)
+    左： 162 163, 右： 158 163 165
+role_def (189)
+    左： 164 165, 右： 162 163
+roleattribute_def (190)
+    左： 166, 右： 85
+opt_constraints (191)
+    左： 167 168, 右： 6
+constraints (192)
+    左： 169 170, 右： 167 170
+constraint_decl (193)
+    左： 171 172, 右： 169 170
+constraint_def (194)
+    左： 173, 右： 171
+validatetrans_def (195)
+    左： 174, 右： 172
+cexpr (196)
+    左： 175 176 177 178 179, 右： 70 71 173 174 175 176 177 178
+cexpr_prim (197)
+    左： 180 181 182 184 186 188 190 192 194 196 198 200 201 203
+    205 206 208 210 211 212 213 214 215 216, 右： 179
+$@4 (198)
+    左： 183, 右： 184
+$@5 (199)
+    左： 185, 右： 186
+$@6 (200)
+    左： 187, 右： 188
+$@7 (201)
+    左： 189, 右： 190
+$@8 (202)
+    左： 191, 右： 192
+$@9 (203)
+    左： 193, 右： 194
+$@10 (204)
+    左： 195, 右： 196
+$@11 (205)
+    左： 197, 右： 198
+$@12 (206)
+    左： 199, 右： 200
+$@13 (207)
+    左： 202, 右： 203
+$@14 (208)
+    左： 204, 右： 205
+$@15 (209)
+    左： 207, 右： 208
+$@16 (210)
+    左： 209, 右： 210
+op (211)
+    左： 217 218, 右： 180 182 184 186 188 190 192 194 196 198
+    200 219
+role_mls_op (212)
+    左： 219 220 221 222, 右： 181 206 211 212 213 214 215 216
+users (213)
+    左： 223 224, 右： 6 224
+user_def (214)
+    左： 225, 右： 223 224 367
+opt_mls_user (215)
+    左： 226 227, 右： 225
+initial_sid_contexts (216)
+    左： 228 229, 右： 6 229
+initial_sid_context_def (217)
+    左： 230, 右： 228 229
+opt_dev_contexts (218)
+    左： 231 232, 右： 6
+dev_contexts (219)
+    左： 233 234, 右： 231 234
+dev_context_def (220)
+    左： 235 236 237 238, 右： 233 234
+pirq_context_def (221)
+    左： 239, 右： 235
+iomem_context_def (222)
+    左： 240 241, 右： 236
+ioport_context_def (223)
+    左： 242 243, 右： 237
+pci_context_def (224)
+    左： 244, 右： 238
+opt_fs_contexts (225)
+    左： 245 246, 右： 6
+fs_contexts (226)
+    左： 247 248, 右： 245 248
+fs_context_def (227)
+    左： 249, 右： 247 248
+net_contexts (228)
+    左： 250, 右： 6
+opt_port_contexts (229)
+    左： 251 252, 右： 250
+port_contexts (230)
+    左： 253 254, 右： 251 254
+port_context_def (231)
+    左： 255 256, 右： 253 254
+opt_netif_contexts (232)
+    左： 257 258, 右： 250
+netif_contexts (233)
+    左： 259 260, 右： 257 260
+netif_context_def (234)
+    左： 261, 右： 259 260
+opt_node_contexts (235)
+    左： 262 263, 右： 250
+node_contexts (236)
+    左： 264 265, 右： 262 265
+node_context_def (237)
+    左： 266 267, 右： 264 265
+opt_fs_uses (238)
+    左： 268 269, 右： 6
+fs_uses (239)
+    左： 270 271, 右： 268 271
+fs_use_def (240)
+    左： 272 273 274, 右： 270 271
+opt_genfs_contexts (241)
+    左： 275 276, 右： 6
+genfs_contexts (242)
+    左： 277 278, 右： 275 278
+genfs_context_def (243)
+    左： 279 281 282, 右： 277 278
+$@17 (244)
+    左： 280, 右： 281
+ipv4_addr_def (245)
+    左： 283, 右： 266 334
+security_context_def (246)
+    左： 284, 右： 230 239 240 241 242 243 244 249 255 256 261
+    266 267 272 273 274 279 281 282
+opt_mls_range_def (247)
+    左： 285 286, 右： 284
+mls_range_def (248)
+    左： 287 288, 右： 143 144 226 285
+mls_level_def (249)
+    左： 289 290, 右： 226 287 288
+id_comma_list (250)
+    左： 291 292, 右： 64 102 103 104 166 289 292
+tilde (251)
+    左： 293, 右： 298 299 302
+asterisk (252)
+    左： 294, 右： 297 303
+names (253)
+    左： 295 296 297 298 299 301, 右： 34 35 36 37 38 39 40 41
+    42 43 44 45 53 70 71 127 128 129 130 135 136 137 138 139 140 141
+    142 143 144 150 151 152 153 154 156 159 160 161 173 174 225 349
+$@18 (254)
+    左： 300, 右： 301
+tilde_push (255)
+    左： 302, 右： 307 308
+asterisk_push (256)
+    左： 303, 右： 306
+names_push (257)
+    左： 304 305 306 307 308, 右： 184 186 188 190 192 194 196
+    198 200 203 205 208 210
+identifier_list_push (258)
+    左： 309 310, 右： 305 308 310
+identifier_push (259)
+    左： 311, 右： 164 165 304 307 309 310
+identifier_list (260)
+    左： 312 313, 右： 18 21 23 55 313
+nested_id_set (261)
+    左： 314, 右： 296 299 320
+nested_id_list (262)
+    左： 315 316, 右： 314 316
+nested_id_element (263)
+    左： 317 319 320, 右： 315 316
+$@19 (264)
+    左： 318, 右： 319
+identifier (265)
+    左： 321, 右： 9 12 18 21 22 23 51 52 54 60 61 64 65 98 99
+    100 101 102 103 106 107 121 127 128 129 130 139 140 141 142 155
+    156 157 159 160 166 225 230 255 256 261 273 274 279 284 289 290
+    291 292 295 298 301 312 313 317 319 328 329 331 349 359 360
+filesystem (266)
+    左： 322 323, 右： 272 279 281 282
+path (267)
+    左： 324, 右： 279 281 282
+filename (268)
+    左： 325, 右： 127 139
+number (269)
+    左： 326, 右： 239 240 241 242 243 244 249 255 256 333
+ipv6_addr (270)
+    左： 327, 右： 267
+policycap_def (271)
+    左： 328, 右： 78
+permissive_def (272)
+    左： 329, 右： 97
+module_policy (273)
+    左： 330, 右： 2
+module_def (274)
+    左： 331, 右： 330
+version_identifier (275)
+    左： 332 333 334, 右： 331
+avrules_block (276)
+    左： 335, 右： 330 362 363
+avrule_decls (277)
+    左： 336 337, 右： 335 336
+avrule_decl (278)
+    左： 338 339 340 341 342 343, 右： 336 337
+require_block (279)
+    左： 344, 右： 126 341
+require_list (280)
+    左： 345 346, 右： 344 345
+require_decl (281)
+    左： 347 348, 右： 345 346
+require_class (282)
+    左： 349, 右： 347
+require_decl_def (283)
+    左： 350 351 352 353 354 355 356 357 358, 右： 348
+require_id_list (284)
+    左： 359 360, 右： 348 360
+optional_block (285)
+    左： 362, 右： 77 342
+$@20 (286)
+    左： 361, 右： 362
+optional_else (287)
+    左： 363 364, 右： 362
+optional_decl (288)
+    左： 365, 右： 362
+else_decl (289)
+    左： 366, 右： 363
+avrule_user_defs (290)
+    左： 367 368, 右： 335 367
+
+
+State 0
+
+    0 $accept: . policy $end
+
+    MODULE  shift, and go to state 1
+
+    $default  reduce using rule 3 ($@1)
+
+    policy         转到状态 2
+    base_policy    转到状态 3
+    $@1            转到状态 4
+    module_policy  转到状态 5
+    module_def     转到状态 6
+
+
+State 1
+
+  331 module_def: MODULE . identifier version_identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 8
+
+
+State 2
+
+    0 $accept: policy . $end
+
+    $end  shift, and go to state 9
+
+
+State 3
+
+    1 policy: base_policy .
+
+    $default  reduce using rule 1 (policy)
+
+
+State 4
+
+    6 base_policy: $@1 . classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    CLASS  shift, and go to state 10
+
+    classes    转到状态 11
+    class_def  转到状态 12
+
+
+State 5
+
+    2 policy: module_policy .
+
+    $default  reduce using rule 2 (policy)
+
+
+State 6
+
+  330 module_policy: module_def . avrules_block
+
+    ROLE              shift, and go to state 13
+    ROLEATTRIBUTE     shift, and go to state 14
+    ATTRIBUTE_ROLE    shift, and go to state 15
+    TYPEALIAS         shift, and go to state 16
+    TYPEATTRIBUTE     shift, and go to state 17
+    TYPEBOUNDS        shift, and go to state 18
+    TYPE              shift, and go to state 19
+    ATTRIBUTE         shift, and go to state 20
+    BOOL              shift, and go to state 21
+    TUNABLE           shift, and go to state 22
+    IF                shift, and go to state 23
+    TYPE_TRANSITION   shift, and go to state 24
+    TYPE_MEMBER       shift, and go to state 25
+    TYPE_CHANGE       shift, and go to state 26
+    ROLE_TRANSITION   shift, and go to state 27
+    RANGE_TRANSITION  shift, and go to state 28
+    DOMINANCE         shift, and go to state 29
+    NEVERALLOW        shift, and go to state 30
+    ALLOW             shift, and go to state 31
+    AUDITALLOW        shift, and go to state 32
+    AUDITDENY         shift, and go to state 33
+    DONTAUDIT         shift, and go to state 34
+    REQUIRE           shift, and go to state 35
+    OPTIONAL          shift, and go to state 36
+    PERMISSIVE        shift, and go to state 37
+    ';'               shift, and go to state 38
+
+    rbac_decl           转到状态 39
+    te_decl             转到状态 40
+    attribute_def       转到状态 41
+    type_def            转到状态 42
+    typealias_def       转到状态 43
+    typeattribute_def   转到状态 44
+    typebounds_def      转到状态 45
+    bool_def            转到状态 46
+    tunable_def         转到状态 47
+    cond_stmt_def       转到状态 48
+    transition_def      转到状态 49
+    range_trans_def     转到状态 50
+    te_avtab_def        转到状态 51
+    allow_def           转到状态 52
+    auditallow_def      转到状态 53
+    auditdeny_def       转到状态 54
+    dontaudit_def       转到状态 55
+    neverallow_def      转到状态 56
+    attribute_role_def  转到状态 57
+    role_type_def       转到状态 58
+    role_attr_def       转到状态 59
+    role_dominance      转到状态 60
+    role_trans_def      转到状态 61
+    role_allow_def      转到状态 62
+    roleattribute_def   转到状态 63
+    permissive_def      转到状态 64
+    avrules_block       转到状态 65
+    avrule_decls        转到状态 66
+    avrule_decl         转到状态 67
+    require_block       转到状态 68
+    optional_block      转到状态 69
+    optional_decl       转到状态 70
+
+
+State 7
+
+  321 identifier: IDENTIFIER .
+
+    $default  reduce using rule 321 (identifier)
+
+
+State 8
+
+  331 module_def: MODULE identifier . version_identifier ';'
+
+    NUMBER              shift, and go to state 71
+    IPV4_ADDR           shift, and go to state 72
+    VERSION_IDENTIFIER  shift, and go to state 73
+
+    ipv4_addr_def       转到状态 74
+    number              转到状态 75
+    version_identifier  转到状态 76
+
+
+State 9
+
+    0 $accept: policy $end .
+
+    $default  接受
+
+
+State 10
+
+    9 class_def: CLASS . identifier
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 77
+
+
+State 11
+
+    6 base_policy: $@1 classes . initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+    8 classes: classes . class_def
+
+    CLASS  shift, and go to state 10
+    SID    shift, and go to state 78
+
+    class_def        转到状态 79
+    initial_sids     转到状态 80
+    initial_sid_def  转到状态 81
+
+
+State 12
+
+    7 classes: class_def .
+
+    $default  reduce using rule 7 (classes)
+
+
+State 13
+
+  156 role_type_def: ROLE . identifier TYPES names ';'
+  157 role_attr_def: ROLE . identifier opt_attr_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 82
+
+
+State 14
+
+  166 roleattribute_def: ROLEATTRIBUTE . identifier id_comma_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 83
+
+
+State 15
+
+  155 attribute_role_def: ATTRIBUTE_ROLE . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 84
+
+
+State 16
+
+  101 typealias_def: TYPEALIAS . identifier alias_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 85
+
+
+State 17
+
+  102 typeattribute_def: TYPEATTRIBUTE . identifier id_comma_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 86
+
+
+State 18
+
+  103 typebounds_def: TYPEBOUNDS . identifier id_comma_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 87
+
+
+State 19
+
+   99 type_def: TYPE . identifier alias_def opt_attr_list ';'
+  100         | TYPE . identifier opt_attr_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 88
+
+
+State 20
+
+   98 attribute_def: ATTRIBUTE . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 89
+
+
+State 21
+
+  106 bool_def: BOOL . identifier bool_val ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 90
+
+
+State 22
+
+  107 tunable_def: TUNABLE . identifier bool_val ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 91
+
+
+State 23
+
+  110 cond_stmt_def: IF . cond_expr '{' cond_pol_list '}' cond_else
+
+    NOT         shift, and go to state 92
+    IDENTIFIER  shift, and go to state 7
+    '('         shift, and go to state 93
+
+    cond_expr       转到状态 94
+    cond_expr_prim  转到状态 95
+    identifier      转到状态 96
+
+
+State 24
+
+  139 transition_def: TYPE_TRANSITION . names names ':' names identifier filename ';'
+  140               | TYPE_TRANSITION . names names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 102
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 25
+
+  141 transition_def: TYPE_MEMBER . names names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 105
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 26
+
+  142 transition_def: TYPE_CHANGE . names names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 106
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 27
+
+  159 role_trans_def: ROLE_TRANSITION . names names identifier ';'
+  160               | ROLE_TRANSITION . names names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 107
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 28
+
+  143 range_trans_def: RANGE_TRANSITION . names names mls_range_def ';'
+  144                | RANGE_TRANSITION . names names ':' names mls_range_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 108
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 29
+
+  158 role_dominance: DOMINANCE . '{' roles '}'
+
+    '{'  shift, and go to state 109
+
+
+State 30
+
+  154 neverallow_def: NEVERALLOW . names names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 110
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 31
+
+  150 allow_def: ALLOW . names names ':' names names ';'
+  161 role_allow_def: ALLOW . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 111
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 32
+
+  151 auditallow_def: AUDITALLOW . names names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 112
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 33
+
+  152 auditdeny_def: AUDITDENY . names names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 113
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 34
+
+  153 dontaudit_def: DONTAUDIT . names names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 114
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 35
+
+  344 require_block: REQUIRE . '{' require_list '}'
+
+    '{'  shift, and go to state 115
+
+
+State 36
+
+  365 optional_decl: OPTIONAL .
+
+    $default  reduce using rule 365 (optional_decl)
+
+
+State 37
+
+  329 permissive_def: PERMISSIVE . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 116
+
+
+State 38
+
+  343 avrule_decl: ';' .
+
+    $default  reduce using rule 343 (avrule_decl)
+
+
+State 39
+
+  338 avrule_decl: rbac_decl .
+
+    $default  reduce using rule 338 (avrule_decl)
+
+
+State 40
+
+  339 avrule_decl: te_decl .
+
+    $default  reduce using rule 339 (avrule_decl)
+
+
+State 41
+
+   87 te_decl: attribute_def .
+
+    $default  reduce using rule 87 (te_decl)
+
+
+State 42
+
+   88 te_decl: type_def .
+
+    $default  reduce using rule 88 (te_decl)
+
+
+State 43
+
+   89 te_decl: typealias_def .
+
+    $default  reduce using rule 89 (te_decl)
+
+
+State 44
+
+   90 te_decl: typeattribute_def .
+
+    $default  reduce using rule 90 (te_decl)
+
+
+State 45
+
+   91 te_decl: typebounds_def .
+
+    $default  reduce using rule 91 (te_decl)
+
+
+State 46
+
+   92 te_decl: bool_def .
+
+    $default  reduce using rule 92 (te_decl)
+
+
+State 47
+
+   93 te_decl: tunable_def .
+
+    $default  reduce using rule 93 (te_decl)
+
+
+State 48
+
+  340 avrule_decl: cond_stmt_def .
+
+    $default  reduce using rule 340 (avrule_decl)
+
+
+State 49
+
+   94 te_decl: transition_def .
+
+    $default  reduce using rule 94 (te_decl)
+
+
+State 50
+
+   95 te_decl: range_trans_def .
+
+    $default  reduce using rule 95 (te_decl)
+
+
+State 51
+
+   96 te_decl: te_avtab_def .
+
+    $default  reduce using rule 96 (te_decl)
+
+
+State 52
+
+  145 te_avtab_def: allow_def .
+
+    $default  reduce using rule 145 (te_avtab_def)
+
+
+State 53
+
+  146 te_avtab_def: auditallow_def .
+
+    $default  reduce using rule 146 (te_avtab_def)
+
+
+State 54
+
+  147 te_avtab_def: auditdeny_def .
+
+    $default  reduce using rule 147 (te_avtab_def)
+
+
+State 55
+
+  148 te_avtab_def: dontaudit_def .
+
+    $default  reduce using rule 148 (te_avtab_def)
+
+
+State 56
+
+  149 te_avtab_def: neverallow_def .
+
+    $default  reduce using rule 149 (te_avtab_def)
+
+
+State 57
+
+   80 rbac_decl: attribute_role_def .
+
+    $default  reduce using rule 80 (rbac_decl)
+
+
+State 58
+
+   81 rbac_decl: role_type_def .
+
+    $default  reduce using rule 81 (rbac_decl)
+
+
+State 59
+
+   86 rbac_decl: role_attr_def .
+
+    $default  reduce using rule 86 (rbac_decl)
+
+
+State 60
+
+   82 rbac_decl: role_dominance .
+
+    $default  reduce using rule 82 (rbac_decl)
+
+
+State 61
+
+   83 rbac_decl: role_trans_def .
+
+    $default  reduce using rule 83 (rbac_decl)
+
+
+State 62
+
+   84 rbac_decl: role_allow_def .
+
+    $default  reduce using rule 84 (rbac_decl)
+
+
+State 63
+
+   85 rbac_decl: roleattribute_def .
+
+    $default  reduce using rule 85 (rbac_decl)
+
+
+State 64
+
+   97 te_decl: permissive_def .
+
+    $default  reduce using rule 97 (te_decl)
+
+
+State 65
+
+  330 module_policy: module_def avrules_block .
+
+    $default  reduce using rule 330 (module_policy)
+
+
+State 66
+
+  335 avrules_block: avrule_decls . avrule_user_defs
+  336 avrule_decls: avrule_decls . avrule_decl
+
+    ROLE              shift, and go to state 13
+    ROLEATTRIBUTE     shift, and go to state 14
+    ATTRIBUTE_ROLE    shift, and go to state 15
+    TYPEALIAS         shift, and go to state 16
+    TYPEATTRIBUTE     shift, and go to state 17
+    TYPEBOUNDS        shift, and go to state 18
+    TYPE              shift, and go to state 19
+    ATTRIBUTE         shift, and go to state 20
+    BOOL              shift, and go to state 21
+    TUNABLE           shift, and go to state 22
+    IF                shift, and go to state 23
+    TYPE_TRANSITION   shift, and go to state 24
+    TYPE_MEMBER       shift, and go to state 25
+    TYPE_CHANGE       shift, and go to state 26
+    ROLE_TRANSITION   shift, and go to state 27
+    RANGE_TRANSITION  shift, and go to state 28
+    DOMINANCE         shift, and go to state 29
+    USER              shift, and go to state 117
+    NEVERALLOW        shift, and go to state 30
+    ALLOW             shift, and go to state 31
+    AUDITALLOW        shift, and go to state 32
+    AUDITDENY         shift, and go to state 33
+    DONTAUDIT         shift, and go to state 34
+    REQUIRE           shift, and go to state 35
+    OPTIONAL          shift, and go to state 36
+    PERMISSIVE        shift, and go to state 37
+    ';'               shift, and go to state 38
+
+    $default  reduce using rule 368 (avrule_user_defs)
+
+    rbac_decl           转到状态 39
+    te_decl             转到状态 40
+    attribute_def       转到状态 41
+    type_def            转到状态 42
+    typealias_def       转到状态 43
+    typeattribute_def   转到状态 44
+    typebounds_def      转到状态 45
+    bool_def            转到状态 46
+    tunable_def         转到状态 47
+    cond_stmt_def       转到状态 48
+    transition_def      转到状态 49
+    range_trans_def     转到状态 50
+    te_avtab_def        转到状态 51
+    allow_def           转到状态 52
+    auditallow_def      转到状态 53
+    auditdeny_def       转到状态 54
+    dontaudit_def       转到状态 55
+    neverallow_def      转到状态 56
+    attribute_role_def  转到状态 57
+    role_type_def       转到状态 58
+    role_attr_def       转到状态 59
+    role_dominance      转到状态 60
+    role_trans_def      转到状态 61
+    role_allow_def      转到状态 62
+    roleattribute_def   转到状态 63
+    user_def            转到状态 118
+    permissive_def      转到状态 64
+    avrule_decl         转到状态 119
+    require_block       转到状态 68
+    optional_block      转到状态 69
+    optional_decl       转到状态 70
+    avrule_user_defs    转到状态 120
+
+
+State 67
+
+  337 avrule_decls: avrule_decl .
+
+    $default  reduce using rule 337 (avrule_decls)
+
+
+State 68
+
+  341 avrule_decl: require_block .
+
+    $default  reduce using rule 341 (avrule_decl)
+
+
+State 69
+
+  342 avrule_decl: optional_block .
+
+    $default  reduce using rule 342 (avrule_decl)
+
+
+State 70
+
+  362 optional_block: optional_decl . '{' avrules_block '}' $@20 optional_else
+
+    '{'  shift, and go to state 121
+
+
+State 71
+
+  326 number: NUMBER .
+
+    $default  reduce using rule 326 (number)
+
+
+State 72
+
+  283 ipv4_addr_def: IPV4_ADDR .
+
+    $default  reduce using rule 283 (ipv4_addr_def)
+
+
+State 73
+
+  332 version_identifier: VERSION_IDENTIFIER .
+
+    $default  reduce using rule 332 (version_identifier)
+
+
+State 74
+
+  334 version_identifier: ipv4_addr_def .
+
+    $default  reduce using rule 334 (version_identifier)
+
+
+State 75
+
+  333 version_identifier: number .
+
+    $default  reduce using rule 333 (version_identifier)
+
+
+State 76
+
+  331 module_def: MODULE identifier version_identifier . ';'
+
+    ';'  shift, and go to state 122
+
+
+State 77
+
+    9 class_def: CLASS identifier .
+
+    $default  reduce using rule 9 (class_def)
+
+
+State 78
+
+   12 initial_sid_def: SID . identifier
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 123
+
+
+State 79
+
+    8 classes: classes class_def .
+
+    $default  reduce using rule 8 (classes)
+
+
+State 80
+
+    6 base_policy: $@1 classes initial_sids . access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+   11 initial_sids: initial_sids . initial_sid_def
+
+    COMMON  shift, and go to state 124
+    SID     shift, and go to state 78
+
+    $default  reduce using rule 15 (opt_common_perms)
+
+    initial_sid_def   转到状态 125
+    access_vectors    转到状态 126
+    opt_common_perms  转到状态 127
+    common_perms      转到状态 128
+    common_perms_def  转到状态 129
+
+
+State 81
+
+   10 initial_sids: initial_sid_def .
+
+    $default  reduce using rule 10 (initial_sids)
+
+
+State 82
+
+  156 role_type_def: ROLE identifier . TYPES names ';'
+  157 role_attr_def: ROLE identifier . opt_attr_list ';'
+
+    TYPES  shift, and go to state 130
+    ','    shift, and go to state 131
+
+    $default  reduce using rule 105 (opt_attr_list)
+
+    opt_attr_list  转到状态 132
+
+
+State 83
+
+  166 roleattribute_def: ROLEATTRIBUTE identifier . id_comma_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    id_comma_list  转到状态 133
+    identifier     转到状态 134
+
+
+State 84
+
+  155 attribute_role_def: ATTRIBUTE_ROLE identifier . ';'
+
+    ';'  shift, and go to state 135
+
+
+State 85
+
+  101 typealias_def: TYPEALIAS identifier . alias_def ';'
+
+    ALIAS  shift, and go to state 136
+
+    alias_def  转到状态 137
+
+
+State 86
+
+  102 typeattribute_def: TYPEATTRIBUTE identifier . id_comma_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    id_comma_list  转到状态 138
+    identifier     转到状态 134
+
+
+State 87
+
+  103 typebounds_def: TYPEBOUNDS identifier . id_comma_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    id_comma_list  转到状态 139
+    identifier     转到状态 134
+
+
+State 88
+
+   99 type_def: TYPE identifier . alias_def opt_attr_list ';'
+  100         | TYPE identifier . opt_attr_list ';'
+
+    ALIAS  shift, and go to state 136
+    ','    shift, and go to state 131
+
+    $default  reduce using rule 105 (opt_attr_list)
+
+    alias_def      转到状态 140
+    opt_attr_list  转到状态 141
+
+
+State 89
+
+   98 attribute_def: ATTRIBUTE identifier . ';'
+
+    ';'  shift, and go to state 142
+
+
+State 90
+
+  106 bool_def: BOOL identifier . bool_val ';'
+
+    CTRUE   shift, and go to state 143
+    CFALSE  shift, and go to state 144
+
+    bool_val  转到状态 145
+
+
+State 91
+
+  107 tunable_def: TUNABLE identifier . bool_val ';'
+
+    CTRUE   shift, and go to state 143
+    CFALSE  shift, and go to state 144
+
+    bool_val  转到状态 146
+
+
+State 92
+
+  114 cond_expr: NOT . cond_expr
+
+    NOT         shift, and go to state 92
+    IDENTIFIER  shift, and go to state 7
+    '('         shift, and go to state 93
+
+    cond_expr       转到状态 147
+    cond_expr_prim  转到状态 95
+    identifier      转到状态 96
+
+
+State 93
+
+  113 cond_expr: '(' . cond_expr ')'
+
+    NOT         shift, and go to state 92
+    IDENTIFIER  shift, and go to state 7
+    '('         shift, and go to state 93
+
+    cond_expr       转到状态 148
+    cond_expr_prim  转到状态 95
+    identifier      转到状态 96
+
+
+State 94
+
+  110 cond_stmt_def: IF cond_expr . '{' cond_pol_list '}' cond_else
+  115 cond_expr: cond_expr . AND cond_expr
+  116          | cond_expr . OR cond_expr
+  117          | cond_expr . XOR cond_expr
+  118          | cond_expr . EQUALS cond_expr
+  119          | cond_expr . NOTEQUAL cond_expr
+
+    AND       shift, and go to state 149
+    OR        shift, and go to state 150
+    XOR       shift, and go to state 151
+    EQUALS    shift, and go to state 152
+    NOTEQUAL  shift, and go to state 153
+    '{'       shift, and go to state 154
+
+
+State 95
+
+  120 cond_expr: cond_expr_prim .
+
+    $default  reduce using rule 120 (cond_expr)
+
+
+State 96
+
+  121 cond_expr_prim: identifier .
+
+    $default  reduce using rule 121 (cond_expr_prim)
+
+
+State 97
+
+  314 nested_id_set: '{' . nested_id_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '-'         shift, and go to state 155
+
+    nested_id_set      转到状态 156
+    nested_id_list     转到状态 157
+    nested_id_element  转到状态 158
+    identifier         转到状态 159
+
+
+State 98
+
+  293 tilde: '~' .
+
+    $default  reduce using rule 293 (tilde)
+
+
+State 99
+
+  294 asterisk: '*' .
+
+    $default  reduce using rule 294 (asterisk)
+
+
+State 100
+
+  298 names: tilde . identifier
+  299      | tilde . nested_id_set
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+
+    nested_id_set  转到状态 160
+    identifier     转到状态 161
+
+
+State 101
+
+  297 names: asterisk .
+
+    $default  reduce using rule 297 (names)
+
+
+State 102
+
+  139 transition_def: TYPE_TRANSITION names . names ':' names identifier filename ';'
+  140               | TYPE_TRANSITION names . names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 162
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 103
+
+  296 names: nested_id_set .
+
+    $default  reduce using rule 296 (names)
+
+
+State 104
+
+  295 names: identifier .
+  301      | identifier . '-' $@18 identifier
+
+    '-'  shift, and go to state 163
+
+    $default  reduce using rule 295 (names)
+
+
+State 105
+
+  141 transition_def: TYPE_MEMBER names . names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 164
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 106
+
+  142 transition_def: TYPE_CHANGE names . names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 165
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 107
+
+  159 role_trans_def: ROLE_TRANSITION names . names identifier ';'
+  160               | ROLE_TRANSITION names . names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 166
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 108
+
+  143 range_trans_def: RANGE_TRANSITION names . names mls_range_def ';'
+  144                | RANGE_TRANSITION names . names ':' names mls_range_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 167
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 109
+
+  158 role_dominance: DOMINANCE '{' . roles '}'
+
+    ROLE  shift, and go to state 168
+
+    roles     转到状态 169
+    role_def  转到状态 170
+
+
+State 110
+
+  154 neverallow_def: NEVERALLOW names . names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 171
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 111
+
+  150 allow_def: ALLOW names . names ':' names names ';'
+  161 role_allow_def: ALLOW names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 172
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 112
+
+  151 auditallow_def: AUDITALLOW names . names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 173
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 113
+
+  152 auditdeny_def: AUDITDENY names . names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 174
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 114
+
+  153 dontaudit_def: DONTAUDIT names . names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 175
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 115
+
+  344 require_block: REQUIRE '{' . require_list '}'
+
+    CLASS           shift, and go to state 176
+    ROLE            shift, and go to state 177
+    ATTRIBUTE_ROLE  shift, and go to state 178
+    TYPE            shift, and go to state 179
+    ATTRIBUTE       shift, and go to state 180
+    BOOL            shift, and go to state 181
+    TUNABLE         shift, and go to state 182
+    SENSITIVITY     shift, and go to state 183
+    CATEGORY        shift, and go to state 184
+    USER            shift, and go to state 185
+
+    require_list      转到状态 186
+    require_decl      转到状态 187
+    require_class     转到状态 188
+    require_decl_def  转到状态 189
+
+
+State 116
+
+  329 permissive_def: PERMISSIVE identifier . ';'
+
+    ';'  shift, and go to state 190
+
+
+State 117
+
+  225 user_def: USER . identifier ROLES names opt_mls_user ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 191
+
+
+State 118
+
+  367 avrule_user_defs: user_def . avrule_user_defs
+
+    USER  shift, and go to state 117
+
+    $default  reduce using rule 368 (avrule_user_defs)
+
+    user_def          转到状态 118
+    avrule_user_defs  转到状态 192
+
+
+State 119
+
+  336 avrule_decls: avrule_decls avrule_decl .
+
+    $default  reduce using rule 336 (avrule_decls)
+
+
+State 120
+
+  335 avrules_block: avrule_decls avrule_user_defs .
+
+    $default  reduce using rule 335 (avrules_block)
+
+
+State 121
+
+  362 optional_block: optional_decl '{' . avrules_block '}' $@20 optional_else
+
+    ROLE              shift, and go to state 13
+    ROLEATTRIBUTE     shift, and go to state 14
+    ATTRIBUTE_ROLE    shift, and go to state 15
+    TYPEALIAS         shift, and go to state 16
+    TYPEATTRIBUTE     shift, and go to state 17
+    TYPEBOUNDS        shift, and go to state 18
+    TYPE              shift, and go to state 19
+    ATTRIBUTE         shift, and go to state 20
+    BOOL              shift, and go to state 21
+    TUNABLE           shift, and go to state 22
+    IF                shift, and go to state 23
+    TYPE_TRANSITION   shift, and go to state 24
+    TYPE_MEMBER       shift, and go to state 25
+    TYPE_CHANGE       shift, and go to state 26
+    ROLE_TRANSITION   shift, and go to state 27
+    RANGE_TRANSITION  shift, and go to state 28
+    DOMINANCE         shift, and go to state 29
+    NEVERALLOW        shift, and go to state 30
+    ALLOW             shift, and go to state 31
+    AUDITALLOW        shift, and go to state 32
+    AUDITDENY         shift, and go to state 33
+    DONTAUDIT         shift, and go to state 34
+    REQUIRE           shift, and go to state 35
+    OPTIONAL          shift, and go to state 36
+    PERMISSIVE        shift, and go to state 37
+    ';'               shift, and go to state 38
+
+    rbac_decl           转到状态 39
+    te_decl             转到状态 40
+    attribute_def       转到状态 41
+    type_def            转到状态 42
+    typealias_def       转到状态 43
+    typeattribute_def   转到状态 44
+    typebounds_def      转到状态 45
+    bool_def            转到状态 46
+    tunable_def         转到状态 47
+    cond_stmt_def       转到状态 48
+    transition_def      转到状态 49
+    range_trans_def     转到状态 50
+    te_avtab_def        转到状态 51
+    allow_def           转到状态 52
+    auditallow_def      转到状态 53
+    auditdeny_def       转到状态 54
+    dontaudit_def       转到状态 55
+    neverallow_def      转到状态 56
+    attribute_role_def  转到状态 57
+    role_type_def       转到状态 58
+    role_attr_def       转到状态 59
+    role_dominance      转到状态 60
+    role_trans_def      转到状态 61
+    role_allow_def      转到状态 62
+    roleattribute_def   转到状态 63
+    permissive_def      转到状态 64
+    avrules_block       转到状态 193
+    avrule_decls        转到状态 66
+    avrule_decl         转到状态 67
+    require_block       转到状态 68
+    optional_block      转到状态 69
+    optional_decl       转到状态 70
+
+
+State 122
+
+  331 module_def: MODULE identifier version_identifier ';' .
+
+    $default  reduce using rule 331 (module_def)
+
+
+State 123
+
+   12 initial_sid_def: SID identifier .
+
+    $default  reduce using rule 12 (initial_sid_def)
+
+
+State 124
+
+   18 common_perms_def: COMMON . identifier '{' identifier_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 194
+
+
+State 125
+
+   11 initial_sids: initial_sids initial_sid_def .
+
+    $default  reduce using rule 11 (initial_sids)
+
+
+State 126
+
+    6 base_policy: $@1 classes initial_sids access_vectors . $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    $default  reduce using rule 4 ($@2)
+
+    $@2  转到状态 195
+
+
+State 127
+
+   13 access_vectors: opt_common_perms . av_perms
+
+    CLASS  shift, and go to state 196
+
+    av_perms      转到状态 197
+    av_perms_def  转到状态 198
+
+
+State 128
+
+   14 opt_common_perms: common_perms .
+   17 common_perms: common_perms . common_perms_def
+
+    COMMON  shift, and go to state 124
+
+    $default  reduce using rule 14 (opt_common_perms)
+
+    common_perms_def  转到状态 199
+
+
+State 129
+
+   16 common_perms: common_perms_def .
+
+    $default  reduce using rule 16 (common_perms)
+
+
+State 130
+
+  156 role_type_def: ROLE identifier TYPES . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 200
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 131
+
+  104 opt_attr_list: ',' . id_comma_list
+
+    IDENTIFIER  shift, and go to state 7
+
+    id_comma_list  转到状态 201
+    identifier     转到状态 134
+
+
+State 132
+
+  157 role_attr_def: ROLE identifier opt_attr_list . ';'
+
+    ';'  shift, and go to state 202
+
+
+State 133
+
+  166 roleattribute_def: ROLEATTRIBUTE identifier id_comma_list . ';'
+  292 id_comma_list: id_comma_list . ',' identifier
+
+    ';'  shift, and go to state 203
+    ','  shift, and go to state 204
+
+
+State 134
+
+  291 id_comma_list: identifier .
+
+    $default  reduce using rule 291 (id_comma_list)
+
+
+State 135
+
+  155 attribute_role_def: ATTRIBUTE_ROLE identifier ';' .
+
+    $default  reduce using rule 155 (attribute_role_def)
+
+
+State 136
+
+   53 alias_def: ALIAS . names
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 205
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 137
+
+  101 typealias_def: TYPEALIAS identifier alias_def . ';'
+
+    ';'  shift, and go to state 206
+
+
+State 138
+
+  102 typeattribute_def: TYPEATTRIBUTE identifier id_comma_list . ';'
+  292 id_comma_list: id_comma_list . ',' identifier
+
+    ';'  shift, and go to state 207
+    ','  shift, and go to state 204
+
+
+State 139
+
+  103 typebounds_def: TYPEBOUNDS identifier id_comma_list . ';'
+  292 id_comma_list: id_comma_list . ',' identifier
+
+    ';'  shift, and go to state 208
+    ','  shift, and go to state 204
+
+
+State 140
+
+   99 type_def: TYPE identifier alias_def . opt_attr_list ';'
+
+    ','  shift, and go to state 131
+
+    $default  reduce using rule 105 (opt_attr_list)
+
+    opt_attr_list  转到状态 209
+
+
+State 141
+
+  100 type_def: TYPE identifier opt_attr_list . ';'
+
+    ';'  shift, and go to state 210
+
+
+State 142
+
+   98 attribute_def: ATTRIBUTE identifier ';' .
+
+    $default  reduce using rule 98 (attribute_def)
+
+
+State 143
+
+  108 bool_val: CTRUE .
+
+    $default  reduce using rule 108 (bool_val)
+
+
+State 144
+
+  109 bool_val: CFALSE .
+
+    $default  reduce using rule 109 (bool_val)
+
+
+State 145
+
+  106 bool_def: BOOL identifier bool_val . ';'
+
+    ';'  shift, and go to state 211
+
+
+State 146
+
+  107 tunable_def: TUNABLE identifier bool_val . ';'
+
+    ';'  shift, and go to state 212
+
+
+State 147
+
+  114 cond_expr: NOT cond_expr .
+  115          | cond_expr . AND cond_expr
+  116          | cond_expr . OR cond_expr
+  117          | cond_expr . XOR cond_expr
+  118          | cond_expr . EQUALS cond_expr
+  119          | cond_expr . NOTEQUAL cond_expr
+
+    EQUALS    shift, and go to state 152
+    NOTEQUAL  shift, and go to state 153
+
+    $default  reduce using rule 114 (cond_expr)
+
+
+State 148
+
+  113 cond_expr: '(' cond_expr . ')'
+  115          | cond_expr . AND cond_expr
+  116          | cond_expr . OR cond_expr
+  117          | cond_expr . XOR cond_expr
+  118          | cond_expr . EQUALS cond_expr
+  119          | cond_expr . NOTEQUAL cond_expr
+
+    AND       shift, and go to state 149
+    OR        shift, and go to state 150
+    XOR       shift, and go to state 151
+    EQUALS    shift, and go to state 152
+    NOTEQUAL  shift, and go to state 153
+    ')'       shift, and go to state 213
+
+
+State 149
+
+  115 cond_expr: cond_expr AND . cond_expr
+
+    NOT         shift, and go to state 92
+    IDENTIFIER  shift, and go to state 7
+    '('         shift, and go to state 93
+
+    cond_expr       转到状态 214
+    cond_expr_prim  转到状态 95
+    identifier      转到状态 96
+
+
+State 150
+
+  116 cond_expr: cond_expr OR . cond_expr
+
+    NOT         shift, and go to state 92
+    IDENTIFIER  shift, and go to state 7
+    '('         shift, and go to state 93
+
+    cond_expr       转到状态 215
+    cond_expr_prim  转到状态 95
+    identifier      转到状态 96
+
+
+State 151
+
+  117 cond_expr: cond_expr XOR . cond_expr
+
+    NOT         shift, and go to state 92
+    IDENTIFIER  shift, and go to state 7
+    '('         shift, and go to state 93
+
+    cond_expr       转到状态 216
+    cond_expr_prim  转到状态 95
+    identifier      转到状态 96
+
+
+State 152
+
+  118 cond_expr: cond_expr EQUALS . cond_expr
+
+    NOT         shift, and go to state 92
+    IDENTIFIER  shift, and go to state 7
+    '('         shift, and go to state 93
+
+    cond_expr       转到状态 217
+    cond_expr_prim  转到状态 95
+    identifier      转到状态 96
+
+
+State 153
+
+  119 cond_expr: cond_expr NOTEQUAL . cond_expr
+
+    NOT         shift, and go to state 92
+    IDENTIFIER  shift, and go to state 7
+    '('         shift, and go to state 93
+
+    cond_expr       转到状态 218
+    cond_expr_prim  转到状态 95
+    identifier      转到状态 96
+
+
+State 154
+
+  110 cond_stmt_def: IF cond_expr '{' . cond_pol_list '}' cond_else
+
+    $default  reduce using rule 123 (cond_pol_list)
+
+    cond_pol_list  转到状态 219
+
+
+State 155
+
+  319 nested_id_element: '-' . $@19 identifier
+
+    $default  reduce using rule 318 ($@19)
+
+    $@19  转到状态 220
+
+
+State 156
+
+  320 nested_id_element: nested_id_set .
+
+    $default  reduce using rule 320 (nested_id_element)
+
+
+State 157
+
+  314 nested_id_set: '{' nested_id_list . '}'
+  316 nested_id_list: nested_id_list . nested_id_element
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '}'         shift, and go to state 221
+    '-'         shift, and go to state 155
+
+    nested_id_set      转到状态 156
+    nested_id_element  转到状态 222
+    identifier         转到状态 159
+
+
+State 158
+
+  315 nested_id_list: nested_id_element .
+
+    $default  reduce using rule 315 (nested_id_list)
+
+
+State 159
+
+  317 nested_id_element: identifier .
+
+    $default  reduce using rule 317 (nested_id_element)
+
+
+State 160
+
+  299 names: tilde nested_id_set .
+
+    $default  reduce using rule 299 (names)
+
+
+State 161
+
+  298 names: tilde identifier .
+
+    $default  reduce using rule 298 (names)
+
+
+State 162
+
+  139 transition_def: TYPE_TRANSITION names names . ':' names identifier filename ';'
+  140               | TYPE_TRANSITION names names . ':' names identifier ';'
+
+    ':'  shift, and go to state 223
+
+
+State 163
+
+  301 names: identifier '-' . $@18 identifier
+
+    $default  reduce using rule 300 ($@18)
+
+    $@18  转到状态 224
+
+
+State 164
+
+  141 transition_def: TYPE_MEMBER names names . ':' names identifier ';'
+
+    ':'  shift, and go to state 225
+
+
+State 165
+
+  142 transition_def: TYPE_CHANGE names names . ':' names identifier ';'
+
+    ':'  shift, and go to state 226
+
+
+State 166
+
+  159 role_trans_def: ROLE_TRANSITION names names . identifier ';'
+  160               | ROLE_TRANSITION names names . ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    ':'         shift, and go to state 227
+
+    identifier  转到状态 228
+
+
+State 167
+
+  143 range_trans_def: RANGE_TRANSITION names names . mls_range_def ';'
+  144                | RANGE_TRANSITION names names . ':' names mls_range_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+    ':'         shift, and go to state 229
+
+    mls_range_def  转到状态 230
+    mls_level_def  转到状态 231
+    identifier     转到状态 232
+
+
+State 168
+
+  164 role_def: ROLE . identifier_push ';'
+  165         | ROLE . identifier_push '{' roles '}'
+
+    IDENTIFIER  shift, and go to state 233
+
+    identifier_push  转到状态 234
+
+
+State 169
+
+  158 role_dominance: DOMINANCE '{' roles . '}'
+  163 roles: roles . role_def
+
+    ROLE  shift, and go to state 168
+    '}'   shift, and go to state 235
+
+    role_def  转到状态 236
+
+
+State 170
+
+  162 roles: role_def .
+
+    $default  reduce using rule 162 (roles)
+
+
+State 171
+
+  154 neverallow_def: NEVERALLOW names names . ':' names names ';'
+
+    ':'  shift, and go to state 237
+
+
+State 172
+
+  150 allow_def: ALLOW names names . ':' names names ';'
+  161 role_allow_def: ALLOW names names . ';'
+
+    ';'  shift, and go to state 238
+    ':'  shift, and go to state 239
+
+
+State 173
+
+  151 auditallow_def: AUDITALLOW names names . ':' names names ';'
+
+    ':'  shift, and go to state 240
+
+
+State 174
+
+  152 auditdeny_def: AUDITDENY names names . ':' names names ';'
+
+    ':'  shift, and go to state 241
+
+
+State 175
+
+  153 dontaudit_def: DONTAUDIT names names . ':' names names ';'
+
+    ':'  shift, and go to state 242
+
+
+State 176
+
+  349 require_class: CLASS . identifier names
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 243
+
+
+State 177
+
+  350 require_decl_def: ROLE .
+
+    $default  reduce using rule 350 (require_decl_def)
+
+
+State 178
+
+  353 require_decl_def: ATTRIBUTE_ROLE .
+
+    $default  reduce using rule 353 (require_decl_def)
+
+
+State 179
+
+  351 require_decl_def: TYPE .
+
+    $default  reduce using rule 351 (require_decl_def)
+
+
+State 180
+
+  352 require_decl_def: ATTRIBUTE .
+
+    $default  reduce using rule 352 (require_decl_def)
+
+
+State 181
+
+  355 require_decl_def: BOOL .
+
+    $default  reduce using rule 355 (require_decl_def)
+
+
+State 182
+
+  356 require_decl_def: TUNABLE .
+
+    $default  reduce using rule 356 (require_decl_def)
+
+
+State 183
+
+  357 require_decl_def: SENSITIVITY .
+
+    $default  reduce using rule 357 (require_decl_def)
+
+
+State 184
+
+  358 require_decl_def: CATEGORY .
+
+    $default  reduce using rule 358 (require_decl_def)
+
+
+State 185
+
+  354 require_decl_def: USER .
+
+    $default  reduce using rule 354 (require_decl_def)
+
+
+State 186
+
+  344 require_block: REQUIRE '{' require_list . '}'
+  345 require_list: require_list . require_decl
+
+    CLASS           shift, and go to state 176
+    ROLE            shift, and go to state 177
+    ATTRIBUTE_ROLE  shift, and go to state 178
+    TYPE            shift, and go to state 179
+    ATTRIBUTE       shift, and go to state 180
+    BOOL            shift, and go to state 181
+    TUNABLE         shift, and go to state 182
+    SENSITIVITY     shift, and go to state 183
+    CATEGORY        shift, and go to state 184
+    USER            shift, and go to state 185
+    '}'             shift, and go to state 244
+
+    require_decl      转到状态 245
+    require_class     转到状态 188
+    require_decl_def  转到状态 189
+
+
+State 187
+
+  346 require_list: require_decl .
+
+    $default  reduce using rule 346 (require_list)
+
+
+State 188
+
+  347 require_decl: require_class . ';'
+
+    ';'  shift, and go to state 246
+
+
+State 189
+
+  348 require_decl: require_decl_def . require_id_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier       转到状态 247
+    require_id_list  转到状态 248
+
+
+State 190
+
+  329 permissive_def: PERMISSIVE identifier ';' .
+
+    $default  reduce using rule 329 (permissive_def)
+
+
+State 191
+
+  225 user_def: USER identifier . ROLES names opt_mls_user ';'
+
+    ROLES  shift, and go to state 249
+
+
+State 192
+
+  367 avrule_user_defs: user_def avrule_user_defs .
+
+    $default  reduce using rule 367 (avrule_user_defs)
+
+
+State 193
+
+  362 optional_block: optional_decl '{' avrules_block . '}' $@20 optional_else
+
+    '}'  shift, and go to state 250
+
+
+State 194
+
+   18 common_perms_def: COMMON identifier . '{' identifier_list '}'
+
+    '{'  shift, and go to state 251
+
+
+State 195
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 . opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    DEFAULT_USER   shift, and go to state 252
+    DEFAULT_ROLE   shift, and go to state 253
+    DEFAULT_TYPE   shift, and go to state 254
+    DEFAULT_RANGE  shift, and go to state 255
+
+    $default  reduce using rule 25 (opt_default_rules)
+
+    opt_default_rules  转到状态 256
+    default_rules      转到状态 257
+    default_user_def   转到状态 258
+    default_role_def   转到状态 259
+    default_type_def   转到状态 260
+    default_range_def  转到状态 261
+
+
+State 196
+
+   21 av_perms_def: CLASS . identifier '{' identifier_list '}'
+   22             | CLASS . identifier INHERITS identifier
+   23             | CLASS . identifier INHERITS identifier '{' identifier_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 262
+
+
+State 197
+
+   13 access_vectors: opt_common_perms av_perms .
+   20 av_perms: av_perms . av_perms_def
+
+    CLASS  shift, and go to state 196
+
+    $default  reduce using rule 13 (access_vectors)
+
+    av_perms_def  转到状态 263
+
+
+State 198
+
+   19 av_perms: av_perms_def .
+
+    $default  reduce using rule 19 (av_perms)
+
+
+State 199
+
+   17 common_perms: common_perms common_perms_def .
+
+    $default  reduce using rule 17 (common_perms)
+
+
+State 200
+
+  156 role_type_def: ROLE identifier TYPES names . ';'
+
+    ';'  shift, and go to state 264
+
+
+State 201
+
+  104 opt_attr_list: ',' id_comma_list .
+  292 id_comma_list: id_comma_list . ',' identifier
+
+    ','  shift, and go to state 204
+
+    $default  reduce using rule 104 (opt_attr_list)
+
+
+State 202
+
+  157 role_attr_def: ROLE identifier opt_attr_list ';' .
+
+    $default  reduce using rule 157 (role_attr_def)
+
+
+State 203
+
+  166 roleattribute_def: ROLEATTRIBUTE identifier id_comma_list ';' .
+
+    $default  reduce using rule 166 (roleattribute_def)
+
+
+State 204
+
+  292 id_comma_list: id_comma_list ',' . identifier
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 265
+
+
+State 205
+
+   53 alias_def: ALIAS names .
+
+    $default  reduce using rule 53 (alias_def)
+
+
+State 206
+
+  101 typealias_def: TYPEALIAS identifier alias_def ';' .
+
+    $default  reduce using rule 101 (typealias_def)
+
+
+State 207
+
+  102 typeattribute_def: TYPEATTRIBUTE identifier id_comma_list ';' .
+
+    $default  reduce using rule 102 (typeattribute_def)
+
+
+State 208
+
+  103 typebounds_def: TYPEBOUNDS identifier id_comma_list ';' .
+
+    $default  reduce using rule 103 (typebounds_def)
+
+
+State 209
+
+   99 type_def: TYPE identifier alias_def opt_attr_list . ';'
+
+    ';'  shift, and go to state 266
+
+
+State 210
+
+  100 type_def: TYPE identifier opt_attr_list ';' .
+
+    $default  reduce using rule 100 (type_def)
+
+
+State 211
+
+  106 bool_def: BOOL identifier bool_val ';' .
+
+    $default  reduce using rule 106 (bool_def)
+
+
+State 212
+
+  107 tunable_def: TUNABLE identifier bool_val ';' .
+
+    $default  reduce using rule 107 (tunable_def)
+
+
+State 213
+
+  113 cond_expr: '(' cond_expr ')' .
+
+    $default  reduce using rule 113 (cond_expr)
+
+
+State 214
+
+  115 cond_expr: cond_expr . AND cond_expr
+  115          | cond_expr AND cond_expr .
+  116          | cond_expr . OR cond_expr
+  117          | cond_expr . XOR cond_expr
+  118          | cond_expr . EQUALS cond_expr
+  119          | cond_expr . NOTEQUAL cond_expr
+
+    EQUALS    shift, and go to state 152
+    NOTEQUAL  shift, and go to state 153
+
+    $default  reduce using rule 115 (cond_expr)
+
+
+State 215
+
+  115 cond_expr: cond_expr . AND cond_expr
+  116          | cond_expr . OR cond_expr
+  116          | cond_expr OR cond_expr .
+  117          | cond_expr . XOR cond_expr
+  118          | cond_expr . EQUALS cond_expr
+  119          | cond_expr . NOTEQUAL cond_expr
+
+    AND       shift, and go to state 149
+    XOR       shift, and go to state 151
+    EQUALS    shift, and go to state 152
+    NOTEQUAL  shift, and go to state 153
+
+    $default  reduce using rule 116 (cond_expr)
+
+
+State 216
+
+  115 cond_expr: cond_expr . AND cond_expr
+  116          | cond_expr . OR cond_expr
+  117          | cond_expr . XOR cond_expr
+  117          | cond_expr XOR cond_expr .
+  118          | cond_expr . EQUALS cond_expr
+  119          | cond_expr . NOTEQUAL cond_expr
+
+    AND       shift, and go to state 149
+    EQUALS    shift, and go to state 152
+    NOTEQUAL  shift, and go to state 153
+
+    $default  reduce using rule 117 (cond_expr)
+
+
+State 217
+
+  115 cond_expr: cond_expr . AND cond_expr
+  116          | cond_expr . OR cond_expr
+  117          | cond_expr . XOR cond_expr
+  118          | cond_expr . EQUALS cond_expr
+  118          | cond_expr EQUALS cond_expr .
+  119          | cond_expr . NOTEQUAL cond_expr
+
+    $default  reduce using rule 118 (cond_expr)
+
+
+State 218
+
+  115 cond_expr: cond_expr . AND cond_expr
+  116          | cond_expr . OR cond_expr
+  117          | cond_expr . XOR cond_expr
+  118          | cond_expr . EQUALS cond_expr
+  119          | cond_expr . NOTEQUAL cond_expr
+  119          | cond_expr NOTEQUAL cond_expr .
+
+    $default  reduce using rule 119 (cond_expr)
+
+
+State 219
+
+  110 cond_stmt_def: IF cond_expr '{' cond_pol_list . '}' cond_else
+  122 cond_pol_list: cond_pol_list . cond_rule_def
+
+    TYPE_TRANSITION  shift, and go to state 267
+    TYPE_MEMBER      shift, and go to state 268
+    TYPE_CHANGE      shift, and go to state 269
+    ALLOW            shift, and go to state 270
+    AUDITALLOW       shift, and go to state 271
+    AUDITDENY        shift, and go to state 272
+    DONTAUDIT        shift, and go to state 273
+    REQUIRE          shift, and go to state 35
+    '}'              shift, and go to state 274
+
+    cond_rule_def        转到状态 275
+    cond_transition_def  转到状态 276
+    cond_te_avtab_def    转到状态 277
+    cond_allow_def       转到状态 278
+    cond_auditallow_def  转到状态 279
+    cond_auditdeny_def   转到状态 280
+    cond_dontaudit_def   转到状态 281
+    require_block        转到状态 282
+
+
+State 220
+
+  319 nested_id_element: '-' $@19 . identifier
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 283
+
+
+State 221
+
+  314 nested_id_set: '{' nested_id_list '}' .
+
+    $default  reduce using rule 314 (nested_id_set)
+
+
+State 222
+
+  316 nested_id_list: nested_id_list nested_id_element .
+
+    $default  reduce using rule 316 (nested_id_list)
+
+
+State 223
+
+  139 transition_def: TYPE_TRANSITION names names ':' . names identifier filename ';'
+  140               | TYPE_TRANSITION names names ':' . names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 284
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 224
+
+  301 names: identifier '-' $@18 . identifier
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 285
+
+
+State 225
+
+  141 transition_def: TYPE_MEMBER names names ':' . names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 286
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 226
+
+  142 transition_def: TYPE_CHANGE names names ':' . names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 287
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 227
+
+  160 role_trans_def: ROLE_TRANSITION names names ':' . names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 288
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 228
+
+  159 role_trans_def: ROLE_TRANSITION names names identifier . ';'
+
+    ';'  shift, and go to state 289
+
+
+State 229
+
+  144 range_trans_def: RANGE_TRANSITION names names ':' . names mls_range_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 290
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 230
+
+  143 range_trans_def: RANGE_TRANSITION names names mls_range_def . ';'
+
+    ';'  shift, and go to state 291
+
+
+State 231
+
+  287 mls_range_def: mls_level_def . '-' mls_level_def
+  288              | mls_level_def .
+
+    '-'  shift, and go to state 292
+
+    $default  reduce using rule 288 (mls_range_def)
+
+
+State 232
+
+  289 mls_level_def: identifier . ':' id_comma_list
+  290              | identifier .
+
+    ':'  shift, and go to state 293
+
+    $default  reduce using rule 290 (mls_level_def)
+
+
+State 233
+
+  311 identifier_push: IDENTIFIER .
+
+    $default  reduce using rule 311 (identifier_push)
+
+
+State 234
+
+  164 role_def: ROLE identifier_push . ';'
+  165         | ROLE identifier_push . '{' roles '}'
+
+    '{'  shift, and go to state 294
+    ';'  shift, and go to state 295
+
+
+State 235
+
+  158 role_dominance: DOMINANCE '{' roles '}' .
+
+    $default  reduce using rule 158 (role_dominance)
+
+
+State 236
+
+  163 roles: roles role_def .
+
+    $default  reduce using rule 163 (roles)
+
+
+State 237
+
+  154 neverallow_def: NEVERALLOW names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 296
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 238
+
+  161 role_allow_def: ALLOW names names ';' .
+
+    $default  reduce using rule 161 (role_allow_def)
+
+
+State 239
+
+  150 allow_def: ALLOW names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 297
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 240
+
+  151 auditallow_def: AUDITALLOW names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 298
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 241
+
+  152 auditdeny_def: AUDITDENY names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 299
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 242
+
+  153 dontaudit_def: DONTAUDIT names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 300
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 243
+
+  349 require_class: CLASS identifier . names
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 301
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 244
+
+  344 require_block: REQUIRE '{' require_list '}' .
+
+    $default  reduce using rule 344 (require_block)
+
+
+State 245
+
+  345 require_list: require_list require_decl .
+
+    $default  reduce using rule 345 (require_list)
+
+
+State 246
+
+  347 require_decl: require_class ';' .
+
+    $default  reduce using rule 347 (require_decl)
+
+
+State 247
+
+  359 require_id_list: identifier .
+
+    $default  reduce using rule 359 (require_id_list)
+
+
+State 248
+
+  348 require_decl: require_decl_def require_id_list . ';'
+  360 require_id_list: require_id_list . ',' identifier
+
+    ';'  shift, and go to state 302
+    ','  shift, and go to state 303
+
+
+State 249
+
+  225 user_def: USER identifier ROLES . names opt_mls_user ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 304
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 250
+
+  362 optional_block: optional_decl '{' avrules_block '}' . $@20 optional_else
+
+    $default  reduce using rule 361 ($@20)
+
+    $@20  转到状态 305
+
+
+State 251
+
+   18 common_perms_def: COMMON identifier '{' . identifier_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier_list  转到状态 306
+    identifier       转到状态 307
+
+
+State 252
+
+   34 default_user_def: DEFAULT_USER . names SOURCE ';'
+   35                 | DEFAULT_USER . names TARGET ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 308
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 253
+
+   36 default_role_def: DEFAULT_ROLE . names SOURCE ';'
+   37                 | DEFAULT_ROLE . names TARGET ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 309
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 254
+
+   38 default_type_def: DEFAULT_TYPE . names SOURCE ';'
+   39                 | DEFAULT_TYPE . names TARGET ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 310
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 255
+
+   40 default_range_def: DEFAULT_RANGE . names SOURCE LOW ';'
+   41                  | DEFAULT_RANGE . names SOURCE HIGH ';'
+   42                  | DEFAULT_RANGE . names SOURCE LOW_HIGH ';'
+   43                  | DEFAULT_RANGE . names TARGET LOW ';'
+   44                  | DEFAULT_RANGE . names TARGET HIGH ';'
+   45                  | DEFAULT_RANGE . names TARGET LOW_HIGH ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 311
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 256
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules . opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    SENSITIVITY  shift, and go to state 312
+
+    $default  reduce using rule 47 (opt_mls)
+
+    opt_mls          转到状态 313
+    mls              转到状态 314
+    sensitivities    转到状态 315
+    sensitivity_def  转到状态 316
+
+
+State 257
+
+   24 opt_default_rules: default_rules .
+   30 default_rules: default_rules . default_user_def
+   31              | default_rules . default_role_def
+   32              | default_rules . default_type_def
+   33              | default_rules . default_range_def
+
+    DEFAULT_USER   shift, and go to state 252
+    DEFAULT_ROLE   shift, and go to state 253
+    DEFAULT_TYPE   shift, and go to state 254
+    DEFAULT_RANGE  shift, and go to state 255
+
+    $default  reduce using rule 24 (opt_default_rules)
+
+    default_user_def   转到状态 317
+    default_role_def   转到状态 318
+    default_type_def   转到状态 319
+    default_range_def  转到状态 320
+
+
+State 258
+
+   26 default_rules: default_user_def .
+
+    $default  reduce using rule 26 (default_rules)
+
+
+State 259
+
+   27 default_rules: default_role_def .
+
+    $default  reduce using rule 27 (default_rules)
+
+
+State 260
+
+   28 default_rules: default_type_def .
+
+    $default  reduce using rule 28 (default_rules)
+
+
+State 261
+
+   29 default_rules: default_range_def .
+
+    $default  reduce using rule 29 (default_rules)
+
+
+State 262
+
+   21 av_perms_def: CLASS identifier . '{' identifier_list '}'
+   22             | CLASS identifier . INHERITS identifier
+   23             | CLASS identifier . INHERITS identifier '{' identifier_list '}'
+
+    INHERITS  shift, and go to state 321
+    '{'       shift, and go to state 322
+
+
+State 263
+
+   20 av_perms: av_perms av_perms_def .
+
+    $default  reduce using rule 20 (av_perms)
+
+
+State 264
+
+  156 role_type_def: ROLE identifier TYPES names ';' .
+
+    $default  reduce using rule 156 (role_type_def)
+
+
+State 265
+
+  292 id_comma_list: id_comma_list ',' identifier .
+
+    $default  reduce using rule 292 (id_comma_list)
+
+
+State 266
+
+   99 type_def: TYPE identifier alias_def opt_attr_list ';' .
+
+    $default  reduce using rule 99 (type_def)
+
+
+State 267
+
+  127 cond_transition_def: TYPE_TRANSITION . names names ':' names identifier filename ';'
+  128                    | TYPE_TRANSITION . names names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 323
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 268
+
+  129 cond_transition_def: TYPE_MEMBER . names names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 324
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 269
+
+  130 cond_transition_def: TYPE_CHANGE . names names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 325
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 270
+
+  135 cond_allow_def: ALLOW . names names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 326
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 271
+
+  136 cond_auditallow_def: AUDITALLOW . names names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 327
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 272
+
+  137 cond_auditdeny_def: AUDITDENY . names names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 328
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 273
+
+  138 cond_dontaudit_def: DONTAUDIT . names names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 329
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 274
+
+  110 cond_stmt_def: IF cond_expr '{' cond_pol_list '}' . cond_else
+
+    ELSE  shift, and go to state 330
+
+    $default  reduce using rule 112 (cond_else)
+
+    cond_else  转到状态 331
+
+
+State 275
+
+  122 cond_pol_list: cond_pol_list cond_rule_def .
+
+    $default  reduce using rule 122 (cond_pol_list)
+
+
+State 276
+
+  124 cond_rule_def: cond_transition_def .
+
+    $default  reduce using rule 124 (cond_rule_def)
+
+
+State 277
+
+  125 cond_rule_def: cond_te_avtab_def .
+
+    $default  reduce using rule 125 (cond_rule_def)
+
+
+State 278
+
+  131 cond_te_avtab_def: cond_allow_def .
+
+    $default  reduce using rule 131 (cond_te_avtab_def)
+
+
+State 279
+
+  132 cond_te_avtab_def: cond_auditallow_def .
+
+    $default  reduce using rule 132 (cond_te_avtab_def)
+
+
+State 280
+
+  133 cond_te_avtab_def: cond_auditdeny_def .
+
+    $default  reduce using rule 133 (cond_te_avtab_def)
+
+
+State 281
+
+  134 cond_te_avtab_def: cond_dontaudit_def .
+
+    $default  reduce using rule 134 (cond_te_avtab_def)
+
+
+State 282
+
+  126 cond_rule_def: require_block .
+
+    $default  reduce using rule 126 (cond_rule_def)
+
+
+State 283
+
+  319 nested_id_element: '-' $@19 identifier .
+
+    $default  reduce using rule 319 (nested_id_element)
+
+
+State 284
+
+  139 transition_def: TYPE_TRANSITION names names ':' names . identifier filename ';'
+  140               | TYPE_TRANSITION names names ':' names . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 332
+
+
+State 285
+
+  301 names: identifier '-' $@18 identifier .
+
+    $default  reduce using rule 301 (names)
+
+
+State 286
+
+  141 transition_def: TYPE_MEMBER names names ':' names . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 333
+
+
+State 287
+
+  142 transition_def: TYPE_CHANGE names names ':' names . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 334
+
+
+State 288
+
+  160 role_trans_def: ROLE_TRANSITION names names ':' names . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 335
+
+
+State 289
+
+  159 role_trans_def: ROLE_TRANSITION names names identifier ';' .
+
+    $default  reduce using rule 159 (role_trans_def)
+
+
+State 290
+
+  144 range_trans_def: RANGE_TRANSITION names names ':' names . mls_range_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    mls_range_def  转到状态 336
+    mls_level_def  转到状态 231
+    identifier     转到状态 232
+
+
+State 291
+
+  143 range_trans_def: RANGE_TRANSITION names names mls_range_def ';' .
+
+    $default  reduce using rule 143 (range_trans_def)
+
+
+State 292
+
+  287 mls_range_def: mls_level_def '-' . mls_level_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    mls_level_def  转到状态 337
+    identifier     转到状态 232
+
+
+State 293
+
+  289 mls_level_def: identifier ':' . id_comma_list
+
+    IDENTIFIER  shift, and go to state 7
+
+    id_comma_list  转到状态 338
+    identifier     转到状态 134
+
+
+State 294
+
+  165 role_def: ROLE identifier_push '{' . roles '}'
+
+    ROLE  shift, and go to state 168
+
+    roles     转到状态 339
+    role_def  转到状态 170
+
+
+State 295
+
+  164 role_def: ROLE identifier_push ';' .
+
+    $default  reduce using rule 164 (role_def)
+
+
+State 296
+
+  154 neverallow_def: NEVERALLOW names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 340
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 297
+
+  150 allow_def: ALLOW names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 341
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 298
+
+  151 auditallow_def: AUDITALLOW names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 342
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 299
+
+  152 auditdeny_def: AUDITDENY names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 343
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 300
+
+  153 dontaudit_def: DONTAUDIT names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 344
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 301
+
+  349 require_class: CLASS identifier names .
+
+    $default  reduce using rule 349 (require_class)
+
+
+State 302
+
+  348 require_decl: require_decl_def require_id_list ';' .
+
+    $default  reduce using rule 348 (require_decl)
+
+
+State 303
+
+  360 require_id_list: require_id_list ',' . identifier
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 345
+
+
+State 304
+
+  225 user_def: USER identifier ROLES names . opt_mls_user ';'
+
+    LEVEL  shift, and go to state 346
+
+    $default  reduce using rule 227 (opt_mls_user)
+
+    opt_mls_user  转到状态 347
+
+
+State 305
+
+  362 optional_block: optional_decl '{' avrules_block '}' $@20 . optional_else
+
+    ELSE  shift, and go to state 348
+
+    $default  reduce using rule 364 (optional_else)
+
+    optional_else  转到状态 349
+    else_decl      转到状态 350
+
+
+State 306
+
+   18 common_perms_def: COMMON identifier '{' identifier_list . '}'
+  313 identifier_list: identifier_list . identifier
+
+    IDENTIFIER  shift, and go to state 7
+    '}'         shift, and go to state 351
+
+    identifier  转到状态 352
+
+
+State 307
+
+  312 identifier_list: identifier .
+
+    $default  reduce using rule 312 (identifier_list)
+
+
+State 308
+
+   34 default_user_def: DEFAULT_USER names . SOURCE ';'
+   35                 | DEFAULT_USER names . TARGET ';'
+
+    SOURCE  shift, and go to state 353
+    TARGET  shift, and go to state 354
+
+
+State 309
+
+   36 default_role_def: DEFAULT_ROLE names . SOURCE ';'
+   37                 | DEFAULT_ROLE names . TARGET ';'
+
+    SOURCE  shift, and go to state 355
+    TARGET  shift, and go to state 356
+
+
+State 310
+
+   38 default_type_def: DEFAULT_TYPE names . SOURCE ';'
+   39                 | DEFAULT_TYPE names . TARGET ';'
+
+    SOURCE  shift, and go to state 357
+    TARGET  shift, and go to state 358
+
+
+State 311
+
+   40 default_range_def: DEFAULT_RANGE names . SOURCE LOW ';'
+   41                  | DEFAULT_RANGE names . SOURCE HIGH ';'
+   42                  | DEFAULT_RANGE names . SOURCE LOW_HIGH ';'
+   43                  | DEFAULT_RANGE names . TARGET LOW ';'
+   44                  | DEFAULT_RANGE names . TARGET HIGH ';'
+   45                  | DEFAULT_RANGE names . TARGET LOW_HIGH ';'
+
+    SOURCE  shift, and go to state 359
+    TARGET  shift, and go to state 360
+
+
+State 312
+
+   51 sensitivity_def: SENSITIVITY . identifier alias_def ';'
+   52                | SENSITIVITY . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 361
+
+
+State 313
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls . te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    ROLE              shift, and go to state 13
+    ROLEATTRIBUTE     shift, and go to state 14
+    ATTRIBUTE_ROLE    shift, and go to state 15
+    TYPEALIAS         shift, and go to state 16
+    TYPEATTRIBUTE     shift, and go to state 17
+    TYPEBOUNDS        shift, and go to state 18
+    TYPE              shift, and go to state 19
+    ATTRIBUTE         shift, and go to state 20
+    BOOL              shift, and go to state 21
+    TUNABLE           shift, and go to state 22
+    IF                shift, and go to state 23
+    TYPE_TRANSITION   shift, and go to state 24
+    TYPE_MEMBER       shift, and go to state 25
+    TYPE_CHANGE       shift, and go to state 26
+    ROLE_TRANSITION   shift, and go to state 27
+    RANGE_TRANSITION  shift, and go to state 28
+    DOMINANCE         shift, and go to state 29
+    NEVERALLOW        shift, and go to state 30
+    ALLOW             shift, and go to state 31
+    AUDITALLOW        shift, and go to state 32
+    AUDITDENY         shift, and go to state 33
+    DONTAUDIT         shift, and go to state 34
+    OPTIONAL          shift, and go to state 36
+    POLICYCAP         shift, and go to state 362
+    PERMISSIVE        shift, and go to state 37
+    ';'               shift, and go to state 363
+
+    te_rbac             转到状态 364
+    te_rbac_decl        转到状态 365
+    rbac_decl           转到状态 366
+    te_decl             转到状态 367
+    attribute_def       转到状态 41
+    type_def            转到状态 42
+    typealias_def       转到状态 43
+    typeattribute_def   转到状态 44
+    typebounds_def      转到状态 45
+    bool_def            转到状态 46
+    tunable_def         转到状态 47
+    cond_stmt_def       转到状态 368
+    transition_def      转到状态 49
+    range_trans_def     转到状态 50
+    te_avtab_def        转到状态 51
+    allow_def           转到状态 52
+    auditallow_def      转到状态 53
+    auditdeny_def       转到状态 54
+    dontaudit_def       转到状态 55
+    neverallow_def      转到状态 56
+    attribute_role_def  转到状态 57
+    role_type_def       转到状态 58
+    role_attr_def       转到状态 59
+    role_dominance      转到状态 60
+    role_trans_def      转到状态 61
+    role_allow_def      转到状态 62
+    roleattribute_def   转到状态 63
+    policycap_def       转到状态 369
+    permissive_def      转到状态 64
+    optional_block      转到状态 370
+    optional_decl       转到状态 70
+
+
+State 314
+
+   46 opt_mls: mls .
+
+    $default  reduce using rule 46 (opt_mls)
+
+
+State 315
+
+   48 mls: sensitivities . dominance opt_categories levels mlspolicy
+   50 sensitivities: sensitivities . sensitivity_def
+
+    SENSITIVITY  shift, and go to state 312
+    DOMINANCE    shift, and go to state 371
+
+    sensitivity_def  转到状态 372
+    dominance        转到状态 373
+
+
+State 316
+
+   49 sensitivities: sensitivity_def .
+
+    $default  reduce using rule 49 (sensitivities)
+
+
+State 317
+
+   30 default_rules: default_rules default_user_def .
+
+    $default  reduce using rule 30 (default_rules)
+
+
+State 318
+
+   31 default_rules: default_rules default_role_def .
+
+    $default  reduce using rule 31 (default_rules)
+
+
+State 319
+
+   32 default_rules: default_rules default_type_def .
+
+    $default  reduce using rule 32 (default_rules)
+
+
+State 320
+
+   33 default_rules: default_rules default_range_def .
+
+    $default  reduce using rule 33 (default_rules)
+
+
+State 321
+
+   22 av_perms_def: CLASS identifier INHERITS . identifier
+   23             | CLASS identifier INHERITS . identifier '{' identifier_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 374
+
+
+State 322
+
+   21 av_perms_def: CLASS identifier '{' . identifier_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier_list  转到状态 375
+    identifier       转到状态 307
+
+
+State 323
+
+  127 cond_transition_def: TYPE_TRANSITION names . names ':' names identifier filename ';'
+  128                    | TYPE_TRANSITION names . names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 376
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 324
+
+  129 cond_transition_def: TYPE_MEMBER names . names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 377
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 325
+
+  130 cond_transition_def: TYPE_CHANGE names . names ':' names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 378
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 326
+
+  135 cond_allow_def: ALLOW names . names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 379
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 327
+
+  136 cond_auditallow_def: AUDITALLOW names . names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 380
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 328
+
+  137 cond_auditdeny_def: AUDITDENY names . names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 381
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 329
+
+  138 cond_dontaudit_def: DONTAUDIT names . names ':' names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 382
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 330
+
+  111 cond_else: ELSE . '{' cond_pol_list '}'
+
+    '{'  shift, and go to state 383
+
+
+State 331
+
+  110 cond_stmt_def: IF cond_expr '{' cond_pol_list '}' cond_else .
+
+    $default  reduce using rule 110 (cond_stmt_def)
+
+
+State 332
+
+  139 transition_def: TYPE_TRANSITION names names ':' names identifier . filename ';'
+  140               | TYPE_TRANSITION names names ':' names identifier . ';'
+
+    FILENAME  shift, and go to state 384
+    ';'       shift, and go to state 385
+
+    filename  转到状态 386
+
+
+State 333
+
+  141 transition_def: TYPE_MEMBER names names ':' names identifier . ';'
+
+    ';'  shift, and go to state 387
+
+
+State 334
+
+  142 transition_def: TYPE_CHANGE names names ':' names identifier . ';'
+
+    ';'  shift, and go to state 388
+
+
+State 335
+
+  160 role_trans_def: ROLE_TRANSITION names names ':' names identifier . ';'
+
+    ';'  shift, and go to state 389
+
+
+State 336
+
+  144 range_trans_def: RANGE_TRANSITION names names ':' names mls_range_def . ';'
+
+    ';'  shift, and go to state 390
+
+
+State 337
+
+  287 mls_range_def: mls_level_def '-' mls_level_def .
+
+    $default  reduce using rule 287 (mls_range_def)
+
+
+State 338
+
+  289 mls_level_def: identifier ':' id_comma_list .
+  292 id_comma_list: id_comma_list . ',' identifier
+
+    ','  shift, and go to state 204
+
+    $default  reduce using rule 289 (mls_level_def)
+
+
+State 339
+
+  163 roles: roles . role_def
+  165 role_def: ROLE identifier_push '{' roles . '}'
+
+    ROLE  shift, and go to state 168
+    '}'   shift, and go to state 391
+
+    role_def  转到状态 236
+
+
+State 340
+
+  154 neverallow_def: NEVERALLOW names names ':' names names . ';'
+
+    ';'  shift, and go to state 392
+
+
+State 341
+
+  150 allow_def: ALLOW names names ':' names names . ';'
+
+    ';'  shift, and go to state 393
+
+
+State 342
+
+  151 auditallow_def: AUDITALLOW names names ':' names names . ';'
+
+    ';'  shift, and go to state 394
+
+
+State 343
+
+  152 auditdeny_def: AUDITDENY names names ':' names names . ';'
+
+    ';'  shift, and go to state 395
+
+
+State 344
+
+  153 dontaudit_def: DONTAUDIT names names ':' names names . ';'
+
+    ';'  shift, and go to state 396
+
+
+State 345
+
+  360 require_id_list: require_id_list ',' identifier .
+
+    $default  reduce using rule 360 (require_id_list)
+
+
+State 346
+
+  226 opt_mls_user: LEVEL . mls_level_def RANGE mls_range_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    mls_level_def  转到状态 397
+    identifier     转到状态 232
+
+
+State 347
+
+  225 user_def: USER identifier ROLES names opt_mls_user . ';'
+
+    ';'  shift, and go to state 398
+
+
+State 348
+
+  366 else_decl: ELSE .
+
+    $default  reduce using rule 366 (else_decl)
+
+
+State 349
+
+  362 optional_block: optional_decl '{' avrules_block '}' $@20 optional_else .
+
+    $default  reduce using rule 362 (optional_block)
+
+
+State 350
+
+  363 optional_else: else_decl . '{' avrules_block '}'
+
+    '{'  shift, and go to state 399
+
+
+State 351
+
+   18 common_perms_def: COMMON identifier '{' identifier_list '}' .
+
+    $default  reduce using rule 18 (common_perms_def)
+
+
+State 352
+
+  313 identifier_list: identifier_list identifier .
+
+    $default  reduce using rule 313 (identifier_list)
+
+
+State 353
+
+   34 default_user_def: DEFAULT_USER names SOURCE . ';'
+
+    ';'  shift, and go to state 400
+
+
+State 354
+
+   35 default_user_def: DEFAULT_USER names TARGET . ';'
+
+    ';'  shift, and go to state 401
+
+
+State 355
+
+   36 default_role_def: DEFAULT_ROLE names SOURCE . ';'
+
+    ';'  shift, and go to state 402
+
+
+State 356
+
+   37 default_role_def: DEFAULT_ROLE names TARGET . ';'
+
+    ';'  shift, and go to state 403
+
+
+State 357
+
+   38 default_type_def: DEFAULT_TYPE names SOURCE . ';'
+
+    ';'  shift, and go to state 404
+
+
+State 358
+
+   39 default_type_def: DEFAULT_TYPE names TARGET . ';'
+
+    ';'  shift, and go to state 405
+
+
+State 359
+
+   40 default_range_def: DEFAULT_RANGE names SOURCE . LOW ';'
+   41                  | DEFAULT_RANGE names SOURCE . HIGH ';'
+   42                  | DEFAULT_RANGE names SOURCE . LOW_HIGH ';'
+
+    LOW_HIGH  shift, and go to state 406
+    LOW       shift, and go to state 407
+    HIGH      shift, and go to state 408
+
+
+State 360
+
+   43 default_range_def: DEFAULT_RANGE names TARGET . LOW ';'
+   44                  | DEFAULT_RANGE names TARGET . HIGH ';'
+   45                  | DEFAULT_RANGE names TARGET . LOW_HIGH ';'
+
+    LOW_HIGH  shift, and go to state 409
+    LOW       shift, and go to state 410
+    HIGH      shift, and go to state 411
+
+
+State 361
+
+   51 sensitivity_def: SENSITIVITY identifier . alias_def ';'
+   52                | SENSITIVITY identifier . ';'
+
+    ALIAS  shift, and go to state 136
+    ';'    shift, and go to state 412
+
+    alias_def  转到状态 413
+
+
+State 362
+
+  328 policycap_def: POLICYCAP . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 414
+
+
+State 363
+
+   79 te_rbac_decl: ';' .
+
+    $default  reduce using rule 79 (te_rbac_decl)
+
+
+State 364
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac . users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+   73 te_rbac: te_rbac . te_rbac_decl
+
+    ROLE              shift, and go to state 13
+    ROLEATTRIBUTE     shift, and go to state 14
+    ATTRIBUTE_ROLE    shift, and go to state 15
+    TYPEALIAS         shift, and go to state 16
+    TYPEATTRIBUTE     shift, and go to state 17
+    TYPEBOUNDS        shift, and go to state 18
+    TYPE              shift, and go to state 19
+    ATTRIBUTE         shift, and go to state 20
+    BOOL              shift, and go to state 21
+    TUNABLE           shift, and go to state 22
+    IF                shift, and go to state 23
+    TYPE_TRANSITION   shift, and go to state 24
+    TYPE_MEMBER       shift, and go to state 25
+    TYPE_CHANGE       shift, and go to state 26
+    ROLE_TRANSITION   shift, and go to state 27
+    RANGE_TRANSITION  shift, and go to state 28
+    DOMINANCE         shift, and go to state 29
+    USER              shift, and go to state 117
+    NEVERALLOW        shift, and go to state 30
+    ALLOW             shift, and go to state 31
+    AUDITALLOW        shift, and go to state 32
+    AUDITDENY         shift, and go to state 33
+    DONTAUDIT         shift, and go to state 34
+    OPTIONAL          shift, and go to state 36
+    POLICYCAP         shift, and go to state 362
+    PERMISSIVE        shift, and go to state 37
+    ';'               shift, and go to state 363
+
+    te_rbac_decl        转到状态 415
+    rbac_decl           转到状态 366
+    te_decl             转到状态 367
+    attribute_def       转到状态 41
+    type_def            转到状态 42
+    typealias_def       转到状态 43
+    typeattribute_def   转到状态 44
+    typebounds_def      转到状态 45
+    bool_def            转到状态 46
+    tunable_def         转到状态 47
+    cond_stmt_def       转到状态 368
+    transition_def      转到状态 49
+    range_trans_def     转到状态 50
+    te_avtab_def        转到状态 51
+    allow_def           转到状态 52
+    auditallow_def      转到状态 53
+    auditdeny_def       转到状态 54
+    dontaudit_def       转到状态 55
+    neverallow_def      转到状态 56
+    attribute_role_def  转到状态 57
+    role_type_def       转到状态 58
+    role_attr_def       转到状态 59
+    role_dominance      转到状态 60
+    role_trans_def      转到状态 61
+    role_allow_def      转到状态 62
+    roleattribute_def   转到状态 63
+    users               转到状态 416
+    user_def            转到状态 417
+    policycap_def       转到状态 369
+    permissive_def      转到状态 64
+    optional_block      转到状态 370
+    optional_decl       转到状态 70
+
+
+State 365
+
+   72 te_rbac: te_rbac_decl .
+
+    $default  reduce using rule 72 (te_rbac)
+
+
+State 366
+
+   75 te_rbac_decl: rbac_decl .
+
+    $default  reduce using rule 75 (te_rbac_decl)
+
+
+State 367
+
+   74 te_rbac_decl: te_decl .
+
+    $default  reduce using rule 74 (te_rbac_decl)
+
+
+State 368
+
+   76 te_rbac_decl: cond_stmt_def .
+
+    $default  reduce using rule 76 (te_rbac_decl)
+
+
+State 369
+
+   78 te_rbac_decl: policycap_def .
+
+    $default  reduce using rule 78 (te_rbac_decl)
+
+
+State 370
+
+   77 te_rbac_decl: optional_block .
+
+    $default  reduce using rule 77 (te_rbac_decl)
+
+
+State 371
+
+   54 dominance: DOMINANCE . identifier
+   55          | DOMINANCE . '{' identifier_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 418
+
+    identifier  转到状态 419
+
+
+State 372
+
+   50 sensitivities: sensitivities sensitivity_def .
+
+    $default  reduce using rule 50 (sensitivities)
+
+
+State 373
+
+   48 mls: sensitivities dominance . opt_categories levels mlspolicy
+
+    CATEGORY  shift, and go to state 420
+
+    $default  reduce using rule 57 (opt_categories)
+
+    opt_categories  转到状态 421
+    categories      转到状态 422
+    category_def    转到状态 423
+
+
+State 374
+
+   22 av_perms_def: CLASS identifier INHERITS identifier .
+   23             | CLASS identifier INHERITS identifier . '{' identifier_list '}'
+
+    '{'  shift, and go to state 424
+
+    $default  reduce using rule 22 (av_perms_def)
+
+
+State 375
+
+   21 av_perms_def: CLASS identifier '{' identifier_list . '}'
+  313 identifier_list: identifier_list . identifier
+
+    IDENTIFIER  shift, and go to state 7
+    '}'         shift, and go to state 425
+
+    identifier  转到状态 352
+
+
+State 376
+
+  127 cond_transition_def: TYPE_TRANSITION names names . ':' names identifier filename ';'
+  128                    | TYPE_TRANSITION names names . ':' names identifier ';'
+
+    ':'  shift, and go to state 426
+
+
+State 377
+
+  129 cond_transition_def: TYPE_MEMBER names names . ':' names identifier ';'
+
+    ':'  shift, and go to state 427
+
+
+State 378
+
+  130 cond_transition_def: TYPE_CHANGE names names . ':' names identifier ';'
+
+    ':'  shift, and go to state 428
+
+
+State 379
+
+  135 cond_allow_def: ALLOW names names . ':' names names ';'
+
+    ':'  shift, and go to state 429
+
+
+State 380
+
+  136 cond_auditallow_def: AUDITALLOW names names . ':' names names ';'
+
+    ':'  shift, and go to state 430
+
+
+State 381
+
+  137 cond_auditdeny_def: AUDITDENY names names . ':' names names ';'
+
+    ':'  shift, and go to state 431
+
+
+State 382
+
+  138 cond_dontaudit_def: DONTAUDIT names names . ':' names names ';'
+
+    ':'  shift, and go to state 432
+
+
+State 383
+
+  111 cond_else: ELSE '{' . cond_pol_list '}'
+
+    $default  reduce using rule 123 (cond_pol_list)
+
+    cond_pol_list  转到状态 433
+
+
+State 384
+
+  325 filename: FILENAME .
+
+    $default  reduce using rule 325 (filename)
+
+
+State 385
+
+  140 transition_def: TYPE_TRANSITION names names ':' names identifier ';' .
+
+    $default  reduce using rule 140 (transition_def)
+
+
+State 386
+
+  139 transition_def: TYPE_TRANSITION names names ':' names identifier filename . ';'
+
+    ';'  shift, and go to state 434
+
+
+State 387
+
+  141 transition_def: TYPE_MEMBER names names ':' names identifier ';' .
+
+    $default  reduce using rule 141 (transition_def)
+
+
+State 388
+
+  142 transition_def: TYPE_CHANGE names names ':' names identifier ';' .
+
+    $default  reduce using rule 142 (transition_def)
+
+
+State 389
+
+  160 role_trans_def: ROLE_TRANSITION names names ':' names identifier ';' .
+
+    $default  reduce using rule 160 (role_trans_def)
+
+
+State 390
+
+  144 range_trans_def: RANGE_TRANSITION names names ':' names mls_range_def ';' .
+
+    $default  reduce using rule 144 (range_trans_def)
+
+
+State 391
+
+  165 role_def: ROLE identifier_push '{' roles '}' .
+
+    $default  reduce using rule 165 (role_def)
+
+
+State 392
+
+  154 neverallow_def: NEVERALLOW names names ':' names names ';' .
+
+    $default  reduce using rule 154 (neverallow_def)
+
+
+State 393
+
+  150 allow_def: ALLOW names names ':' names names ';' .
+
+    $default  reduce using rule 150 (allow_def)
+
+
+State 394
+
+  151 auditallow_def: AUDITALLOW names names ':' names names ';' .
+
+    $default  reduce using rule 151 (auditallow_def)
+
+
+State 395
+
+  152 auditdeny_def: AUDITDENY names names ':' names names ';' .
+
+    $default  reduce using rule 152 (auditdeny_def)
+
+
+State 396
+
+  153 dontaudit_def: DONTAUDIT names names ':' names names ';' .
+
+    $default  reduce using rule 153 (dontaudit_def)
+
+
+State 397
+
+  226 opt_mls_user: LEVEL mls_level_def . RANGE mls_range_def
+
+    RANGE  shift, and go to state 435
+
+
+State 398
+
+  225 user_def: USER identifier ROLES names opt_mls_user ';' .
+
+    $default  reduce using rule 225 (user_def)
+
+
+State 399
+
+  363 optional_else: else_decl '{' . avrules_block '}'
+
+    ROLE              shift, and go to state 13
+    ROLEATTRIBUTE     shift, and go to state 14
+    ATTRIBUTE_ROLE    shift, and go to state 15
+    TYPEALIAS         shift, and go to state 16
+    TYPEATTRIBUTE     shift, and go to state 17
+    TYPEBOUNDS        shift, and go to state 18
+    TYPE              shift, and go to state 19
+    ATTRIBUTE         shift, and go to state 20
+    BOOL              shift, and go to state 21
+    TUNABLE           shift, and go to state 22
+    IF                shift, and go to state 23
+    TYPE_TRANSITION   shift, and go to state 24
+    TYPE_MEMBER       shift, and go to state 25
+    TYPE_CHANGE       shift, and go to state 26
+    ROLE_TRANSITION   shift, and go to state 27
+    RANGE_TRANSITION  shift, and go to state 28
+    DOMINANCE         shift, and go to state 29
+    NEVERALLOW        shift, and go to state 30
+    ALLOW             shift, and go to state 31
+    AUDITALLOW        shift, and go to state 32
+    AUDITDENY         shift, and go to state 33
+    DONTAUDIT         shift, and go to state 34
+    REQUIRE           shift, and go to state 35
+    OPTIONAL          shift, and go to state 36
+    PERMISSIVE        shift, and go to state 37
+    ';'               shift, and go to state 38
+
+    rbac_decl           转到状态 39
+    te_decl             转到状态 40
+    attribute_def       转到状态 41
+    type_def            转到状态 42
+    typealias_def       转到状态 43
+    typeattribute_def   转到状态 44
+    typebounds_def      转到状态 45
+    bool_def            转到状态 46
+    tunable_def         转到状态 47
+    cond_stmt_def       转到状态 48
+    transition_def      转到状态 49
+    range_trans_def     转到状态 50
+    te_avtab_def        转到状态 51
+    allow_def           转到状态 52
+    auditallow_def      转到状态 53
+    auditdeny_def       转到状态 54
+    dontaudit_def       转到状态 55
+    neverallow_def      转到状态 56
+    attribute_role_def  转到状态 57
+    role_type_def       转到状态 58
+    role_attr_def       转到状态 59
+    role_dominance      转到状态 60
+    role_trans_def      转到状态 61
+    role_allow_def      转到状态 62
+    roleattribute_def   转到状态 63
+    permissive_def      转到状态 64
+    avrules_block       转到状态 436
+    avrule_decls        转到状态 66
+    avrule_decl         转到状态 67
+    require_block       转到状态 68
+    optional_block      转到状态 69
+    optional_decl       转到状态 70
+
+
+State 400
+
+   34 default_user_def: DEFAULT_USER names SOURCE ';' .
+
+    $default  reduce using rule 34 (default_user_def)
+
+
+State 401
+
+   35 default_user_def: DEFAULT_USER names TARGET ';' .
+
+    $default  reduce using rule 35 (default_user_def)
+
+
+State 402
+
+   36 default_role_def: DEFAULT_ROLE names SOURCE ';' .
+
+    $default  reduce using rule 36 (default_role_def)
+
+
+State 403
+
+   37 default_role_def: DEFAULT_ROLE names TARGET ';' .
+
+    $default  reduce using rule 37 (default_role_def)
+
+
+State 404
+
+   38 default_type_def: DEFAULT_TYPE names SOURCE ';' .
+
+    $default  reduce using rule 38 (default_type_def)
+
+
+State 405
+
+   39 default_type_def: DEFAULT_TYPE names TARGET ';' .
+
+    $default  reduce using rule 39 (default_type_def)
+
+
+State 406
+
+   42 default_range_def: DEFAULT_RANGE names SOURCE LOW_HIGH . ';'
+
+    ';'  shift, and go to state 437
+
+
+State 407
+
+   40 default_range_def: DEFAULT_RANGE names SOURCE LOW . ';'
+
+    ';'  shift, and go to state 438
+
+
+State 408
+
+   41 default_range_def: DEFAULT_RANGE names SOURCE HIGH . ';'
+
+    ';'  shift, and go to state 439
+
+
+State 409
+
+   45 default_range_def: DEFAULT_RANGE names TARGET LOW_HIGH . ';'
+
+    ';'  shift, and go to state 440
+
+
+State 410
+
+   43 default_range_def: DEFAULT_RANGE names TARGET LOW . ';'
+
+    ';'  shift, and go to state 441
+
+
+State 411
+
+   44 default_range_def: DEFAULT_RANGE names TARGET HIGH . ';'
+
+    ';'  shift, and go to state 442
+
+
+State 412
+
+   52 sensitivity_def: SENSITIVITY identifier ';' .
+
+    $default  reduce using rule 52 (sensitivity_def)
+
+
+State 413
+
+   51 sensitivity_def: SENSITIVITY identifier alias_def . ';'
+
+    ';'  shift, and go to state 443
+
+
+State 414
+
+  328 policycap_def: POLICYCAP identifier . ';'
+
+    ';'  shift, and go to state 444
+
+
+State 415
+
+   73 te_rbac: te_rbac te_rbac_decl .
+
+    $default  reduce using rule 73 (te_rbac)
+
+
+State 416
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users . opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+  224 users: users . user_def
+
+    CONSTRAIN      shift, and go to state 445
+    VALIDATETRANS  shift, and go to state 446
+    USER           shift, and go to state 117
+
+    $default  reduce using rule 168 (opt_constraints)
+
+    opt_constraints    转到状态 447
+    constraints        转到状态 448
+    constraint_decl    转到状态 449
+    constraint_def     转到状态 450
+    validatetrans_def  转到状态 451
+    user_def           转到状态 452
+
+
+State 417
+
+  223 users: user_def .
+
+    $default  reduce using rule 223 (users)
+
+
+State 418
+
+   55 dominance: DOMINANCE '{' . identifier_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier_list  转到状态 453
+    identifier       转到状态 307
+
+
+State 419
+
+   54 dominance: DOMINANCE identifier .
+
+    $default  reduce using rule 54 (dominance)
+
+
+State 420
+
+   60 category_def: CATEGORY . identifier alias_def ';'
+   61             | CATEGORY . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 454
+
+
+State 421
+
+   48 mls: sensitivities dominance opt_categories . levels mlspolicy
+
+    LEVEL  shift, and go to state 455
+
+    levels     转到状态 456
+    level_def  转到状态 457
+
+
+State 422
+
+   56 opt_categories: categories .
+   59 categories: categories . category_def
+
+    CATEGORY  shift, and go to state 420
+
+    $default  reduce using rule 56 (opt_categories)
+
+    category_def  转到状态 458
+
+
+State 423
+
+   58 categories: category_def .
+
+    $default  reduce using rule 58 (categories)
+
+
+State 424
+
+   23 av_perms_def: CLASS identifier INHERITS identifier '{' . identifier_list '}'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier_list  转到状态 459
+    identifier       转到状态 307
+
+
+State 425
+
+   21 av_perms_def: CLASS identifier '{' identifier_list '}' .
+
+    $default  reduce using rule 21 (av_perms_def)
+
+
+State 426
+
+  127 cond_transition_def: TYPE_TRANSITION names names ':' . names identifier filename ';'
+  128                    | TYPE_TRANSITION names names ':' . names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 460
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 427
+
+  129 cond_transition_def: TYPE_MEMBER names names ':' . names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 461
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 428
+
+  130 cond_transition_def: TYPE_CHANGE names names ':' . names identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 462
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 429
+
+  135 cond_allow_def: ALLOW names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 463
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 430
+
+  136 cond_auditallow_def: AUDITALLOW names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 464
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 431
+
+  137 cond_auditdeny_def: AUDITDENY names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 465
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 432
+
+  138 cond_dontaudit_def: DONTAUDIT names names ':' . names names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 466
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 433
+
+  111 cond_else: ELSE '{' cond_pol_list . '}'
+  122 cond_pol_list: cond_pol_list . cond_rule_def
+
+    TYPE_TRANSITION  shift, and go to state 267
+    TYPE_MEMBER      shift, and go to state 268
+    TYPE_CHANGE      shift, and go to state 269
+    ALLOW            shift, and go to state 270
+    AUDITALLOW       shift, and go to state 271
+    AUDITDENY        shift, and go to state 272
+    DONTAUDIT        shift, and go to state 273
+    REQUIRE          shift, and go to state 35
+    '}'              shift, and go to state 467
+
+    cond_rule_def        转到状态 275
+    cond_transition_def  转到状态 276
+    cond_te_avtab_def    转到状态 277
+    cond_allow_def       转到状态 278
+    cond_auditallow_def  转到状态 279
+    cond_auditdeny_def   转到状态 280
+    cond_dontaudit_def   转到状态 281
+    require_block        转到状态 282
+
+
+State 434
+
+  139 transition_def: TYPE_TRANSITION names names ':' names identifier filename ';' .
+
+    $default  reduce using rule 139 (transition_def)
+
+
+State 435
+
+  226 opt_mls_user: LEVEL mls_level_def RANGE . mls_range_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    mls_range_def  转到状态 468
+    mls_level_def  转到状态 231
+    identifier     转到状态 232
+
+
+State 436
+
+  363 optional_else: else_decl '{' avrules_block . '}'
+
+    '}'  shift, and go to state 469
+
+
+State 437
+
+   42 default_range_def: DEFAULT_RANGE names SOURCE LOW_HIGH ';' .
+
+    $default  reduce using rule 42 (default_range_def)
+
+
+State 438
+
+   40 default_range_def: DEFAULT_RANGE names SOURCE LOW ';' .
+
+    $default  reduce using rule 40 (default_range_def)
+
+
+State 439
+
+   41 default_range_def: DEFAULT_RANGE names SOURCE HIGH ';' .
+
+    $default  reduce using rule 41 (default_range_def)
+
+
+State 440
+
+   45 default_range_def: DEFAULT_RANGE names TARGET LOW_HIGH ';' .
+
+    $default  reduce using rule 45 (default_range_def)
+
+
+State 441
+
+   43 default_range_def: DEFAULT_RANGE names TARGET LOW ';' .
+
+    $default  reduce using rule 43 (default_range_def)
+
+
+State 442
+
+   44 default_range_def: DEFAULT_RANGE names TARGET HIGH ';' .
+
+    $default  reduce using rule 44 (default_range_def)
+
+
+State 443
+
+   51 sensitivity_def: SENSITIVITY identifier alias_def ';' .
+
+    $default  reduce using rule 51 (sensitivity_def)
+
+
+State 444
+
+  328 policycap_def: POLICYCAP identifier ';' .
+
+    $default  reduce using rule 328 (policycap_def)
+
+
+State 445
+
+  173 constraint_def: CONSTRAIN . names names cexpr ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 470
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 446
+
+  174 validatetrans_def: VALIDATETRANS . names cexpr ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 471
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 447
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints . $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    $default  reduce using rule 5 ($@3)
+
+    $@3  转到状态 472
+
+
+State 448
+
+  167 opt_constraints: constraints .
+  170 constraints: constraints . constraint_decl
+
+    CONSTRAIN      shift, and go to state 445
+    VALIDATETRANS  shift, and go to state 446
+
+    $default  reduce using rule 167 (opt_constraints)
+
+    constraint_decl    转到状态 473
+    constraint_def     转到状态 450
+    validatetrans_def  转到状态 451
+
+
+State 449
+
+  169 constraints: constraint_decl .
+
+    $default  reduce using rule 169 (constraints)
+
+
+State 450
+
+  171 constraint_decl: constraint_def .
+
+    $default  reduce using rule 171 (constraint_decl)
+
+
+State 451
+
+  172 constraint_decl: validatetrans_def .
+
+    $default  reduce using rule 172 (constraint_decl)
+
+
+State 452
+
+  224 users: users user_def .
+
+    $default  reduce using rule 224 (users)
+
+
+State 453
+
+   55 dominance: DOMINANCE '{' identifier_list . '}'
+  313 identifier_list: identifier_list . identifier
+
+    IDENTIFIER  shift, and go to state 7
+    '}'         shift, and go to state 474
+
+    identifier  转到状态 352
+
+
+State 454
+
+   60 category_def: CATEGORY identifier . alias_def ';'
+   61             | CATEGORY identifier . ';'
+
+    ALIAS  shift, and go to state 136
+    ';'    shift, and go to state 475
+
+    alias_def  转到状态 476
+
+
+State 455
+
+   64 level_def: LEVEL . identifier ':' id_comma_list ';'
+   65          | LEVEL . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 477
+
+
+State 456
+
+   48 mls: sensitivities dominance opt_categories levels . mlspolicy
+   63 levels: levels . level_def
+
+    LEVEL             shift, and go to state 455
+    MLSCONSTRAIN      shift, and go to state 478
+    MLSVALIDATETRANS  shift, and go to state 479
+
+    level_def             转到状态 480
+    mlspolicy             转到状态 481
+    mlspolicy_decl        转到状态 482
+    mlsconstraint_def     转到状态 483
+    mlsvalidatetrans_def  转到状态 484
+
+
+State 457
+
+   62 levels: level_def .
+
+    $default  reduce using rule 62 (levels)
+
+
+State 458
+
+   59 categories: categories category_def .
+
+    $default  reduce using rule 59 (categories)
+
+
+State 459
+
+   23 av_perms_def: CLASS identifier INHERITS identifier '{' identifier_list . '}'
+  313 identifier_list: identifier_list . identifier
+
+    IDENTIFIER  shift, and go to state 7
+    '}'         shift, and go to state 485
+
+    identifier  转到状态 352
+
+
+State 460
+
+  127 cond_transition_def: TYPE_TRANSITION names names ':' names . identifier filename ';'
+  128                    | TYPE_TRANSITION names names ':' names . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 486
+
+
+State 461
+
+  129 cond_transition_def: TYPE_MEMBER names names ':' names . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 487
+
+
+State 462
+
+  130 cond_transition_def: TYPE_CHANGE names names ':' names . identifier ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 488
+
+
+State 463
+
+  135 cond_allow_def: ALLOW names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 489
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 464
+
+  136 cond_auditallow_def: AUDITALLOW names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 490
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 465
+
+  137 cond_auditdeny_def: AUDITDENY names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 491
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 466
+
+  138 cond_dontaudit_def: DONTAUDIT names names ':' names . names ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 492
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 467
+
+  111 cond_else: ELSE '{' cond_pol_list '}' .
+
+    $default  reduce using rule 111 (cond_else)
+
+
+State 468
+
+  226 opt_mls_user: LEVEL mls_level_def RANGE mls_range_def .
+
+    $default  reduce using rule 226 (opt_mls_user)
+
+
+State 469
+
+  363 optional_else: else_decl '{' avrules_block '}' .
+
+    $default  reduce using rule 363 (optional_else)
+
+
+State 470
+
+  173 constraint_def: CONSTRAIN names . names cexpr ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 493
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 471
+
+  174 validatetrans_def: VALIDATETRANS names . cexpr ';'
+
+    ROLE      shift, and go to state 494
+    SOURCE    shift, and go to state 495
+    TARGET    shift, and go to state 496
+    SAMEUSER  shift, and go to state 497
+    U1        shift, and go to state 498
+    U2        shift, and go to state 499
+    U3        shift, and go to state 500
+    R1        shift, and go to state 501
+    R2        shift, and go to state 502
+    R3        shift, and go to state 503
+    T1        shift, and go to state 504
+    T2        shift, and go to state 505
+    T3        shift, and go to state 506
+    L1        shift, and go to state 507
+    L2        shift, and go to state 508
+    H1        shift, and go to state 509
+    NOT       shift, and go to state 510
+    '('       shift, and go to state 511
+
+    cexpr       转到状态 512
+    cexpr_prim  转到状态 513
+
+
+State 472
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 . initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    SID  shift, and go to state 514
+
+    initial_sid_contexts     转到状态 515
+    initial_sid_context_def  转到状态 516
+
+
+State 473
+
+  170 constraints: constraints constraint_decl .
+
+    $default  reduce using rule 170 (constraints)
+
+
+State 474
+
+   55 dominance: DOMINANCE '{' identifier_list '}' .
+
+    $default  reduce using rule 55 (dominance)
+
+
+State 475
+
+   61 category_def: CATEGORY identifier ';' .
+
+    $default  reduce using rule 61 (category_def)
+
+
+State 476
+
+   60 category_def: CATEGORY identifier alias_def . ';'
+
+    ';'  shift, and go to state 517
+
+
+State 477
+
+   64 level_def: LEVEL identifier . ':' id_comma_list ';'
+   65          | LEVEL identifier . ';'
+
+    ';'  shift, and go to state 518
+    ':'  shift, and go to state 519
+
+
+State 478
+
+   70 mlsconstraint_def: MLSCONSTRAIN . names names cexpr ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 520
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 479
+
+   71 mlsvalidatetrans_def: MLSVALIDATETRANS . names cexpr ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 521
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 480
+
+   63 levels: levels level_def .
+
+    $default  reduce using rule 63 (levels)
+
+
+State 481
+
+   48 mls: sensitivities dominance opt_categories levels mlspolicy .
+   67 mlspolicy: mlspolicy . mlspolicy_decl
+
+    MLSCONSTRAIN      shift, and go to state 478
+    MLSVALIDATETRANS  shift, and go to state 479
+
+    $default  reduce using rule 48 (mls)
+
+    mlspolicy_decl        转到状态 522
+    mlsconstraint_def     转到状态 483
+    mlsvalidatetrans_def  转到状态 484
+
+
+State 482
+
+   66 mlspolicy: mlspolicy_decl .
+
+    $default  reduce using rule 66 (mlspolicy)
+
+
+State 483
+
+   68 mlspolicy_decl: mlsconstraint_def .
+
+    $default  reduce using rule 68 (mlspolicy_decl)
+
+
+State 484
+
+   69 mlspolicy_decl: mlsvalidatetrans_def .
+
+    $default  reduce using rule 69 (mlspolicy_decl)
+
+
+State 485
+
+   23 av_perms_def: CLASS identifier INHERITS identifier '{' identifier_list '}' .
+
+    $default  reduce using rule 23 (av_perms_def)
+
+
+State 486
+
+  127 cond_transition_def: TYPE_TRANSITION names names ':' names identifier . filename ';'
+  128                    | TYPE_TRANSITION names names ':' names identifier . ';'
+
+    FILENAME  shift, and go to state 384
+    ';'       shift, and go to state 523
+
+    filename  转到状态 524
+
+
+State 487
+
+  129 cond_transition_def: TYPE_MEMBER names names ':' names identifier . ';'
+
+    ';'  shift, and go to state 525
+
+
+State 488
+
+  130 cond_transition_def: TYPE_CHANGE names names ':' names identifier . ';'
+
+    ';'  shift, and go to state 526
+
+
+State 489
+
+  135 cond_allow_def: ALLOW names names ':' names names . ';'
+
+    ';'  shift, and go to state 527
+
+
+State 490
+
+  136 cond_auditallow_def: AUDITALLOW names names ':' names names . ';'
+
+    ';'  shift, and go to state 528
+
+
+State 491
+
+  137 cond_auditdeny_def: AUDITDENY names names ':' names names . ';'
+
+    ';'  shift, and go to state 529
+
+
+State 492
+
+  138 cond_dontaudit_def: DONTAUDIT names names ':' names names . ';'
+
+    ';'  shift, and go to state 530
+
+
+State 493
+
+  173 constraint_def: CONSTRAIN names names . cexpr ';'
+
+    ROLE      shift, and go to state 494
+    SOURCE    shift, and go to state 495
+    TARGET    shift, and go to state 496
+    SAMEUSER  shift, and go to state 497
+    U1        shift, and go to state 498
+    U2        shift, and go to state 499
+    U3        shift, and go to state 500
+    R1        shift, and go to state 501
+    R2        shift, and go to state 502
+    R3        shift, and go to state 503
+    T1        shift, and go to state 504
+    T2        shift, and go to state 505
+    T3        shift, and go to state 506
+    L1        shift, and go to state 507
+    L2        shift, and go to state 508
+    H1        shift, and go to state 509
+    NOT       shift, and go to state 510
+    '('       shift, and go to state 511
+
+    cexpr       转到状态 531
+    cexpr_prim  转到状态 513
+
+
+State 494
+
+  206 cexpr_prim: ROLE . role_mls_op
+
+    DOM       shift, and go to state 532
+    DOMBY     shift, and go to state 533
+    INCOMP    shift, and go to state 534
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op           转到状态 537
+    role_mls_op  转到状态 538
+
+
+State 495
+
+  203 cexpr_prim: SOURCE . ROLE $@13 names_push
+  208           | SOURCE . TYPE $@15 names_push
+
+    ROLE  shift, and go to state 539
+    TYPE  shift, and go to state 540
+
+
+State 496
+
+  205 cexpr_prim: TARGET . ROLE $@14 names_push
+  210           | TARGET . TYPE $@16 names_push
+
+    ROLE  shift, and go to state 541
+    TYPE  shift, and go to state 542
+
+
+State 497
+
+  201 cexpr_prim: SAMEUSER .
+
+    $default  reduce using rule 201 (cexpr_prim)
+
+
+State 498
+
+  180 cexpr_prim: U1 . op U2
+  184           | U1 . op $@4 names_push
+
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op  转到状态 543
+
+
+State 499
+
+  186 cexpr_prim: U2 . op $@5 names_push
+
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op  转到状态 544
+
+
+State 500
+
+  188 cexpr_prim: U3 . op $@6 names_push
+
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op  转到状态 545
+
+
+State 501
+
+  181 cexpr_prim: R1 . role_mls_op R2
+  190           | R1 . op $@7 names_push
+
+    DOM       shift, and go to state 532
+    DOMBY     shift, and go to state 533
+    INCOMP    shift, and go to state 534
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op           转到状态 546
+    role_mls_op  转到状态 547
+
+
+State 502
+
+  192 cexpr_prim: R2 . op $@8 names_push
+
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op  转到状态 548
+
+
+State 503
+
+  194 cexpr_prim: R3 . op $@9 names_push
+
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op  转到状态 549
+
+
+State 504
+
+  182 cexpr_prim: T1 . op T2
+  196           | T1 . op $@10 names_push
+
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op  转到状态 550
+
+
+State 505
+
+  198 cexpr_prim: T2 . op $@11 names_push
+
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op  转到状态 551
+
+
+State 506
+
+  200 cexpr_prim: T3 . op $@12 names_push
+
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op  转到状态 552
+
+
+State 507
+
+  211 cexpr_prim: L1 . role_mls_op L2
+  212           | L1 . role_mls_op H2
+  215           | L1 . role_mls_op H1
+
+    DOM       shift, and go to state 532
+    DOMBY     shift, and go to state 533
+    INCOMP    shift, and go to state 534
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op           转到状态 537
+    role_mls_op  转到状态 553
+
+
+State 508
+
+  216 cexpr_prim: L2 . role_mls_op H2
+
+    DOM       shift, and go to state 532
+    DOMBY     shift, and go to state 533
+    INCOMP    shift, and go to state 534
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op           转到状态 537
+    role_mls_op  转到状态 554
+
+
+State 509
+
+  213 cexpr_prim: H1 . role_mls_op L2
+  214           | H1 . role_mls_op H2
+
+    DOM       shift, and go to state 532
+    DOMBY     shift, and go to state 533
+    INCOMP    shift, and go to state 534
+    EQUALS    shift, and go to state 535
+    NOTEQUAL  shift, and go to state 536
+
+    op           转到状态 537
+    role_mls_op  转到状态 555
+
+
+State 510
+
+  176 cexpr: NOT . cexpr
+
+    ROLE      shift, and go to state 494
+    SOURCE    shift, and go to state 495
+    TARGET    shift, and go to state 496
+    SAMEUSER  shift, and go to state 497
+    U1        shift, and go to state 498
+    U2        shift, and go to state 499
+    U3        shift, and go to state 500
+    R1        shift, and go to state 501
+    R2        shift, and go to state 502
+    R3        shift, and go to state 503
+    T1        shift, and go to state 504
+    T2        shift, and go to state 505
+    T3        shift, and go to state 506
+    L1        shift, and go to state 507
+    L2        shift, and go to state 508
+    H1        shift, and go to state 509
+    NOT       shift, and go to state 510
+    '('       shift, and go to state 511
+
+    cexpr       转到状态 556
+    cexpr_prim  转到状态 513
+
+
+State 511
+
+  175 cexpr: '(' . cexpr ')'
+
+    ROLE      shift, and go to state 494
+    SOURCE    shift, and go to state 495
+    TARGET    shift, and go to state 496
+    SAMEUSER  shift, and go to state 497
+    U1        shift, and go to state 498
+    U2        shift, and go to state 499
+    U3        shift, and go to state 500
+    R1        shift, and go to state 501
+    R2        shift, and go to state 502
+    R3        shift, and go to state 503
+    T1        shift, and go to state 504
+    T2        shift, and go to state 505
+    T3        shift, and go to state 506
+    L1        shift, and go to state 507
+    L2        shift, and go to state 508
+    H1        shift, and go to state 509
+    NOT       shift, and go to state 510
+    '('       shift, and go to state 511
+
+    cexpr       转到状态 557
+    cexpr_prim  转到状态 513
+
+
+State 512
+
+  174 validatetrans_def: VALIDATETRANS names cexpr . ';'
+  177 cexpr: cexpr . AND cexpr
+  178      | cexpr . OR cexpr
+
+    AND  shift, and go to state 558
+    OR   shift, and go to state 559
+    ';'  shift, and go to state 560
+
+
+State 513
+
+  179 cexpr: cexpr_prim .
+
+    $default  reduce using rule 179 (cexpr)
+
+
+State 514
+
+  230 initial_sid_context_def: SID . identifier security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 561
+
+
+State 515
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts . opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+  229 initial_sid_contexts: initial_sid_contexts . initial_sid_context_def
+
+    SID    shift, and go to state 514
+    FSCON  shift, and go to state 562
+
+    $default  reduce using rule 246 (opt_fs_contexts)
+
+    initial_sid_context_def  转到状态 563
+    opt_fs_contexts          转到状态 564
+    fs_contexts              转到状态 565
+    fs_context_def           转到状态 566
+
+
+State 516
+
+  228 initial_sid_contexts: initial_sid_context_def .
+
+    $default  reduce using rule 228 (initial_sid_contexts)
+
+
+State 517
+
+   60 category_def: CATEGORY identifier alias_def ';' .
+
+    $default  reduce using rule 60 (category_def)
+
+
+State 518
+
+   65 level_def: LEVEL identifier ';' .
+
+    $default  reduce using rule 65 (level_def)
+
+
+State 519
+
+   64 level_def: LEVEL identifier ':' . id_comma_list ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    id_comma_list  转到状态 567
+    identifier     转到状态 134
+
+
+State 520
+
+   70 mlsconstraint_def: MLSCONSTRAIN names . names cexpr ';'
+
+    IDENTIFIER  shift, and go to state 7
+    '{'         shift, and go to state 97
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde          转到状态 100
+    asterisk       转到状态 101
+    names          转到状态 568
+    nested_id_set  转到状态 103
+    identifier     转到状态 104
+
+
+State 521
+
+   71 mlsvalidatetrans_def: MLSVALIDATETRANS names . cexpr ';'
+
+    ROLE      shift, and go to state 494
+    SOURCE    shift, and go to state 495
+    TARGET    shift, and go to state 496
+    SAMEUSER  shift, and go to state 497
+    U1        shift, and go to state 498
+    U2        shift, and go to state 499
+    U3        shift, and go to state 500
+    R1        shift, and go to state 501
+    R2        shift, and go to state 502
+    R3        shift, and go to state 503
+    T1        shift, and go to state 504
+    T2        shift, and go to state 505
+    T3        shift, and go to state 506
+    L1        shift, and go to state 507
+    L2        shift, and go to state 508
+    H1        shift, and go to state 509
+    NOT       shift, and go to state 510
+    '('       shift, and go to state 511
+
+    cexpr       转到状态 569
+    cexpr_prim  转到状态 513
+
+
+State 522
+
+   67 mlspolicy: mlspolicy mlspolicy_decl .
+
+    $default  reduce using rule 67 (mlspolicy)
+
+
+State 523
+
+  128 cond_transition_def: TYPE_TRANSITION names names ':' names identifier ';' .
+
+    $default  reduce using rule 128 (cond_transition_def)
+
+
+State 524
+
+  127 cond_transition_def: TYPE_TRANSITION names names ':' names identifier filename . ';'
+
+    ';'  shift, and go to state 570
+
+
+State 525
+
+  129 cond_transition_def: TYPE_MEMBER names names ':' names identifier ';' .
+
+    $default  reduce using rule 129 (cond_transition_def)
+
+
+State 526
+
+  130 cond_transition_def: TYPE_CHANGE names names ':' names identifier ';' .
+
+    $default  reduce using rule 130 (cond_transition_def)
+
+
+State 527
+
+  135 cond_allow_def: ALLOW names names ':' names names ';' .
+
+    $default  reduce using rule 135 (cond_allow_def)
+
+
+State 528
+
+  136 cond_auditallow_def: AUDITALLOW names names ':' names names ';' .
+
+    $default  reduce using rule 136 (cond_auditallow_def)
+
+
+State 529
+
+  137 cond_auditdeny_def: AUDITDENY names names ':' names names ';' .
+
+    $default  reduce using rule 137 (cond_auditdeny_def)
+
+
+State 530
+
+  138 cond_dontaudit_def: DONTAUDIT names names ':' names names ';' .
+
+    $default  reduce using rule 138 (cond_dontaudit_def)
+
+
+State 531
+
+  173 constraint_def: CONSTRAIN names names cexpr . ';'
+  177 cexpr: cexpr . AND cexpr
+  178      | cexpr . OR cexpr
+
+    AND  shift, and go to state 558
+    OR   shift, and go to state 559
+    ';'  shift, and go to state 571
+
+
+State 532
+
+  220 role_mls_op: DOM .
+
+    $default  reduce using rule 220 (role_mls_op)
+
+
+State 533
+
+  221 role_mls_op: DOMBY .
+
+    $default  reduce using rule 221 (role_mls_op)
+
+
+State 534
+
+  222 role_mls_op: INCOMP .
+
+    $default  reduce using rule 222 (role_mls_op)
+
+
+State 535
+
+  217 op: EQUALS .
+
+    $default  reduce using rule 217 (op)
+
+
+State 536
+
+  218 op: NOTEQUAL .
+
+    $default  reduce using rule 218 (op)
+
+
+State 537
+
+  219 role_mls_op: op .
+
+    $default  reduce using rule 219 (role_mls_op)
+
+
+State 538
+
+  206 cexpr_prim: ROLE role_mls_op .
+
+    $default  reduce using rule 206 (cexpr_prim)
+
+
+State 539
+
+  203 cexpr_prim: SOURCE ROLE . $@13 names_push
+
+    $default  reduce using rule 202 ($@13)
+
+    $@13  转到状态 572
+
+
+State 540
+
+  208 cexpr_prim: SOURCE TYPE . $@15 names_push
+
+    $default  reduce using rule 207 ($@15)
+
+    $@15  转到状态 573
+
+
+State 541
+
+  205 cexpr_prim: TARGET ROLE . $@14 names_push
+
+    $default  reduce using rule 204 ($@14)
+
+    $@14  转到状态 574
+
+
+State 542
+
+  210 cexpr_prim: TARGET TYPE . $@16 names_push
+
+    $default  reduce using rule 209 ($@16)
+
+    $@16  转到状态 575
+
+
+State 543
+
+  180 cexpr_prim: U1 op . U2
+  184           | U1 op . $@4 names_push
+
+    U2  shift, and go to state 576
+
+    $default  reduce using rule 183 ($@4)
+
+    $@4  转到状态 577
+
+
+State 544
+
+  186 cexpr_prim: U2 op . $@5 names_push
+
+    $default  reduce using rule 185 ($@5)
+
+    $@5  转到状态 578
+
+
+State 545
+
+  188 cexpr_prim: U3 op . $@6 names_push
+
+    $default  reduce using rule 187 ($@6)
+
+    $@6  转到状态 579
+
+
+State 546
+
+  190 cexpr_prim: R1 op . $@7 names_push
+  219 role_mls_op: op .
+
+    R2        reduce using rule 219 (role_mls_op)
+    $default  reduce using rule 189 ($@7)
+
+    $@7  转到状态 580
+
+
+State 547
+
+  181 cexpr_prim: R1 role_mls_op . R2
+
+    R2  shift, and go to state 581
+
+
+State 548
+
+  192 cexpr_prim: R2 op . $@8 names_push
+
+    $default  reduce using rule 191 ($@8)
+
+    $@8  转到状态 582
+
+
+State 549
+
+  194 cexpr_prim: R3 op . $@9 names_push
+
+    $default  reduce using rule 193 ($@9)
+
+    $@9  转到状态 583
+
+
+State 550
+
+  182 cexpr_prim: T1 op . T2
+  196           | T1 op . $@10 names_push
+
+    T2  shift, and go to state 584
+
+    $default  reduce using rule 195 ($@10)
+
+    $@10  转到状态 585
+
+
+State 551
+
+  198 cexpr_prim: T2 op . $@11 names_push
+
+    $default  reduce using rule 197 ($@11)
+
+    $@11  转到状态 586
+
+
+State 552
+
+  200 cexpr_prim: T3 op . $@12 names_push
+
+    $default  reduce using rule 199 ($@12)
+
+    $@12  转到状态 587
+
+
+State 553
+
+  211 cexpr_prim: L1 role_mls_op . L2
+  212           | L1 role_mls_op . H2
+  215           | L1 role_mls_op . H1
+
+    L2  shift, and go to state 588
+    H1  shift, and go to state 589
+    H2  shift, and go to state 590
+
+
+State 554
+
+  216 cexpr_prim: L2 role_mls_op . H2
+
+    H2  shift, and go to state 591
+
+
+State 555
+
+  213 cexpr_prim: H1 role_mls_op . L2
+  214           | H1 role_mls_op . H2
+
+    L2  shift, and go to state 592
+    H2  shift, and go to state 593
+
+
+State 556
+
+  176 cexpr: NOT cexpr .
+  177      | cexpr . AND cexpr
+  178      | cexpr . OR cexpr
+
+    $default  reduce using rule 176 (cexpr)
+
+
+State 557
+
+  175 cexpr: '(' cexpr . ')'
+  177      | cexpr . AND cexpr
+  178      | cexpr . OR cexpr
+
+    AND  shift, and go to state 558
+    OR   shift, and go to state 559
+    ')'  shift, and go to state 594
+
+
+State 558
+
+  177 cexpr: cexpr AND . cexpr
+
+    ROLE      shift, and go to state 494
+    SOURCE    shift, and go to state 495
+    TARGET    shift, and go to state 496
+    SAMEUSER  shift, and go to state 497
+    U1        shift, and go to state 498
+    U2        shift, and go to state 499
+    U3        shift, and go to state 500
+    R1        shift, and go to state 501
+    R2        shift, and go to state 502
+    R3        shift, and go to state 503
+    T1        shift, and go to state 504
+    T2        shift, and go to state 505
+    T3        shift, and go to state 506
+    L1        shift, and go to state 507
+    L2        shift, and go to state 508
+    H1        shift, and go to state 509
+    NOT       shift, and go to state 510
+    '('       shift, and go to state 511
+
+    cexpr       转到状态 595
+    cexpr_prim  转到状态 513
+
+
+State 559
+
+  178 cexpr: cexpr OR . cexpr
+
+    ROLE      shift, and go to state 494
+    SOURCE    shift, and go to state 495
+    TARGET    shift, and go to state 496
+    SAMEUSER  shift, and go to state 497
+    U1        shift, and go to state 498
+    U2        shift, and go to state 499
+    U3        shift, and go to state 500
+    R1        shift, and go to state 501
+    R2        shift, and go to state 502
+    R3        shift, and go to state 503
+    T1        shift, and go to state 504
+    T2        shift, and go to state 505
+    T3        shift, and go to state 506
+    L1        shift, and go to state 507
+    L2        shift, and go to state 508
+    H1        shift, and go to state 509
+    NOT       shift, and go to state 510
+    '('       shift, and go to state 511
+
+    cexpr       转到状态 596
+    cexpr_prim  转到状态 513
+
+
+State 560
+
+  174 validatetrans_def: VALIDATETRANS names cexpr ';' .
+
+    $default  reduce using rule 174 (validatetrans_def)
+
+
+State 561
+
+  230 initial_sid_context_def: SID identifier . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 597
+    identifier            转到状态 598
+
+
+State 562
+
+  249 fs_context_def: FSCON . number number security_context_def security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 599
+
+
+State 563
+
+  229 initial_sid_contexts: initial_sid_contexts initial_sid_context_def .
+
+    $default  reduce using rule 229 (initial_sid_contexts)
+
+
+State 564
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts . opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
+
+    FSUSEXATTR  shift, and go to state 600
+    FSUSETASK   shift, and go to state 601
+    FSUSETRANS  shift, and go to state 602
+
+    $default  reduce using rule 269 (opt_fs_uses)
+
+    opt_fs_uses  转到状态 603
+    fs_uses      转到状态 604
+    fs_use_def   转到状态 605
+
+
+State 565
+
+  245 opt_fs_contexts: fs_contexts .
+  248 fs_contexts: fs_contexts . fs_context_def
+
+    FSCON  shift, and go to state 562
+
+    $default  reduce using rule 245 (opt_fs_contexts)
+
+    fs_context_def  转到状态 606
+
+
+State 566
+
+  247 fs_contexts: fs_context_def .
+
+    $default  reduce using rule 247 (fs_contexts)
+
+
+State 567
+
+   64 level_def: LEVEL identifier ':' id_comma_list . ';'
+  292 id_comma_list: id_comma_list . ',' identifier
+
+    ';'  shift, and go to state 607
+    ','  shift, and go to state 204
+
+
+State 568
+
+   70 mlsconstraint_def: MLSCONSTRAIN names names . cexpr ';'
+
+    ROLE      shift, and go to state 494
+    SOURCE    shift, and go to state 495
+    TARGET    shift, and go to state 496
+    SAMEUSER  shift, and go to state 497
+    U1        shift, and go to state 498
+    U2        shift, and go to state 499
+    U3        shift, and go to state 500
+    R1        shift, and go to state 501
+    R2        shift, and go to state 502
+    R3        shift, and go to state 503
+    T1        shift, and go to state 504
+    T2        shift, and go to state 505
+    T3        shift, and go to state 506
+    L1        shift, and go to state 507
+    L2        shift, and go to state 508
+    H1        shift, and go to state 509
+    NOT       shift, and go to state 510
+    '('       shift, and go to state 511
+
+    cexpr       转到状态 608
+    cexpr_prim  转到状态 513
+
+
+State 569
+
+   71 mlsvalidatetrans_def: MLSVALIDATETRANS names cexpr . ';'
+  177 cexpr: cexpr . AND cexpr
+  178      | cexpr . OR cexpr
+
+    AND  shift, and go to state 558
+    OR   shift, and go to state 559
+    ';'  shift, and go to state 609
+
+
+State 570
+
+  127 cond_transition_def: TYPE_TRANSITION names names ':' names identifier filename ';' .
+
+    $default  reduce using rule 127 (cond_transition_def)
+
+
+State 571
+
+  173 constraint_def: CONSTRAIN names names cexpr ';' .
+
+    $default  reduce using rule 173 (constraint_def)
+
+
+State 572
+
+  203 cexpr_prim: SOURCE ROLE $@13 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 615
+    identifier_push  转到状态 616
+
+
+State 573
+
+  208 cexpr_prim: SOURCE TYPE $@15 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 617
+    identifier_push  转到状态 616
+
+
+State 574
+
+  205 cexpr_prim: TARGET ROLE $@14 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 618
+    identifier_push  转到状态 616
+
+
+State 575
+
+  210 cexpr_prim: TARGET TYPE $@16 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 619
+    identifier_push  转到状态 616
+
+
+State 576
+
+  180 cexpr_prim: U1 op U2 .
+
+    $default  reduce using rule 180 (cexpr_prim)
+
+
+State 577
+
+  184 cexpr_prim: U1 op $@4 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 620
+    identifier_push  转到状态 616
+
+
+State 578
+
+  186 cexpr_prim: U2 op $@5 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 621
+    identifier_push  转到状态 616
+
+
+State 579
+
+  188 cexpr_prim: U3 op $@6 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 622
+    identifier_push  转到状态 616
+
+
+State 580
+
+  190 cexpr_prim: R1 op $@7 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 623
+    identifier_push  转到状态 616
+
+
+State 581
+
+  181 cexpr_prim: R1 role_mls_op R2 .
+
+    $default  reduce using rule 181 (cexpr_prim)
+
+
+State 582
+
+  192 cexpr_prim: R2 op $@8 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 624
+    identifier_push  转到状态 616
+
+
+State 583
+
+  194 cexpr_prim: R3 op $@9 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 625
+    identifier_push  转到状态 616
+
+
+State 584
+
+  182 cexpr_prim: T1 op T2 .
+
+    $default  reduce using rule 182 (cexpr_prim)
+
+
+State 585
+
+  196 cexpr_prim: T1 op $@10 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 626
+    identifier_push  转到状态 616
+
+
+State 586
+
+  198 cexpr_prim: T2 op $@11 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 627
+    identifier_push  转到状态 616
+
+
+State 587
+
+  200 cexpr_prim: T3 op $@12 . names_push
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 610
+    '~'         shift, and go to state 98
+    '*'         shift, and go to state 99
+
+    tilde            转到状态 611
+    asterisk         转到状态 612
+    tilde_push       转到状态 613
+    asterisk_push    转到状态 614
+    names_push       转到状态 628
+    identifier_push  转到状态 616
+
+
+State 588
+
+  211 cexpr_prim: L1 role_mls_op L2 .
+
+    $default  reduce using rule 211 (cexpr_prim)
+
+
+State 589
+
+  215 cexpr_prim: L1 role_mls_op H1 .
+
+    $default  reduce using rule 215 (cexpr_prim)
+
+
+State 590
+
+  212 cexpr_prim: L1 role_mls_op H2 .
+
+    $default  reduce using rule 212 (cexpr_prim)
+
+
+State 591
+
+  216 cexpr_prim: L2 role_mls_op H2 .
+
+    $default  reduce using rule 216 (cexpr_prim)
+
+
+State 592
+
+  213 cexpr_prim: H1 role_mls_op L2 .
+
+    $default  reduce using rule 213 (cexpr_prim)
+
+
+State 593
+
+  214 cexpr_prim: H1 role_mls_op H2 .
+
+    $default  reduce using rule 214 (cexpr_prim)
+
+
+State 594
+
+  175 cexpr: '(' cexpr ')' .
+
+    $default  reduce using rule 175 (cexpr)
+
+
+State 595
+
+  177 cexpr: cexpr . AND cexpr
+  177      | cexpr AND cexpr .
+  178      | cexpr . OR cexpr
+
+    $default  reduce using rule 177 (cexpr)
+
+
+State 596
+
+  177 cexpr: cexpr . AND cexpr
+  178      | cexpr . OR cexpr
+  178      | cexpr OR cexpr .
+
+    AND  shift, and go to state 558
+
+    $default  reduce using rule 178 (cexpr)
+
+
+State 597
+
+  230 initial_sid_context_def: SID identifier security_context_def .
+
+    $default  reduce using rule 230 (initial_sid_context_def)
+
+
+State 598
+
+  284 security_context_def: identifier . ':' identifier ':' identifier opt_mls_range_def
+
+    ':'  shift, and go to state 629
+
+
+State 599
+
+  249 fs_context_def: FSCON number . number security_context_def security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 630
+
+
+State 600
+
+  272 fs_use_def: FSUSEXATTR . filesystem security_context_def ';'
+
+    IDENTIFIER  shift, and go to state 631
+    FILESYSTEM  shift, and go to state 632
+
+    filesystem  转到状态 633
+
+
+State 601
+
+  273 fs_use_def: FSUSETASK . identifier security_context_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 634
+
+
+State 602
+
+  274 fs_use_def: FSUSETRANS . identifier security_context_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 635
+
+
+State 603
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses . opt_genfs_contexts net_contexts opt_dev_contexts
+
+    GENFSCON  shift, and go to state 636
+
+    $default  reduce using rule 276 (opt_genfs_contexts)
+
+    opt_genfs_contexts  转到状态 637
+    genfs_contexts      转到状态 638
+    genfs_context_def   转到状态 639
+
+
+State 604
+
+  268 opt_fs_uses: fs_uses .
+  271 fs_uses: fs_uses . fs_use_def
+
+    FSUSEXATTR  shift, and go to state 600
+    FSUSETASK   shift, and go to state 601
+    FSUSETRANS  shift, and go to state 602
+
+    $default  reduce using rule 268 (opt_fs_uses)
+
+    fs_use_def  转到状态 640
+
+
+State 605
+
+  270 fs_uses: fs_use_def .
+
+    $default  reduce using rule 270 (fs_uses)
+
+
+State 606
+
+  248 fs_contexts: fs_contexts fs_context_def .
+
+    $default  reduce using rule 248 (fs_contexts)
+
+
+State 607
+
+   64 level_def: LEVEL identifier ':' id_comma_list ';' .
+
+    $default  reduce using rule 64 (level_def)
+
+
+State 608
+
+   70 mlsconstraint_def: MLSCONSTRAIN names names cexpr . ';'
+  177 cexpr: cexpr . AND cexpr
+  178      | cexpr . OR cexpr
+
+    AND  shift, and go to state 558
+    OR   shift, and go to state 559
+    ';'  shift, and go to state 641
+
+
+State 609
+
+   71 mlsvalidatetrans_def: MLSVALIDATETRANS names cexpr ';' .
+
+    $default  reduce using rule 71 (mlsvalidatetrans_def)
+
+
+State 610
+
+  305 names_push: '{' . identifier_list_push '}'
+
+    IDENTIFIER  shift, and go to state 233
+
+    identifier_list_push  转到状态 642
+    identifier_push       转到状态 643
+
+
+State 611
+
+  302 tilde_push: tilde .
+
+    $default  reduce using rule 302 (tilde_push)
+
+
+State 612
+
+  303 asterisk_push: asterisk .
+
+    $default  reduce using rule 303 (asterisk_push)
+
+
+State 613
+
+  307 names_push: tilde_push . identifier_push
+  308           | tilde_push . '{' identifier_list_push '}'
+
+    IDENTIFIER  shift, and go to state 233
+    '{'         shift, and go to state 644
+
+    identifier_push  转到状态 645
+
+
+State 614
+
+  306 names_push: asterisk_push .
+
+    $default  reduce using rule 306 (names_push)
+
+
+State 615
+
+  203 cexpr_prim: SOURCE ROLE $@13 names_push .
+
+    $default  reduce using rule 203 (cexpr_prim)
+
+
+State 616
+
+  304 names_push: identifier_push .
+
+    $default  reduce using rule 304 (names_push)
+
+
+State 617
+
+  208 cexpr_prim: SOURCE TYPE $@15 names_push .
+
+    $default  reduce using rule 208 (cexpr_prim)
+
+
+State 618
+
+  205 cexpr_prim: TARGET ROLE $@14 names_push .
+
+    $default  reduce using rule 205 (cexpr_prim)
+
+
+State 619
+
+  210 cexpr_prim: TARGET TYPE $@16 names_push .
+
+    $default  reduce using rule 210 (cexpr_prim)
+
+
+State 620
+
+  184 cexpr_prim: U1 op $@4 names_push .
+
+    $default  reduce using rule 184 (cexpr_prim)
+
+
+State 621
+
+  186 cexpr_prim: U2 op $@5 names_push .
+
+    $default  reduce using rule 186 (cexpr_prim)
+
+
+State 622
+
+  188 cexpr_prim: U3 op $@6 names_push .
+
+    $default  reduce using rule 188 (cexpr_prim)
+
+
+State 623
+
+  190 cexpr_prim: R1 op $@7 names_push .
+
+    $default  reduce using rule 190 (cexpr_prim)
+
+
+State 624
+
+  192 cexpr_prim: R2 op $@8 names_push .
+
+    $default  reduce using rule 192 (cexpr_prim)
+
+
+State 625
+
+  194 cexpr_prim: R3 op $@9 names_push .
+
+    $default  reduce using rule 194 (cexpr_prim)
+
+
+State 626
+
+  196 cexpr_prim: T1 op $@10 names_push .
+
+    $default  reduce using rule 196 (cexpr_prim)
+
+
+State 627
+
+  198 cexpr_prim: T2 op $@11 names_push .
+
+    $default  reduce using rule 198 (cexpr_prim)
+
+
+State 628
+
+  200 cexpr_prim: T3 op $@12 names_push .
+
+    $default  reduce using rule 200 (cexpr_prim)
+
+
+State 629
+
+  284 security_context_def: identifier ':' . identifier ':' identifier opt_mls_range_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 646
+
+
+State 630
+
+  249 fs_context_def: FSCON number number . security_context_def security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 647
+    identifier            转到状态 598
+
+
+State 631
+
+  323 filesystem: IDENTIFIER .
+
+    $default  reduce using rule 323 (filesystem)
+
+
+State 632
+
+  322 filesystem: FILESYSTEM .
+
+    $default  reduce using rule 322 (filesystem)
+
+
+State 633
+
+  272 fs_use_def: FSUSEXATTR filesystem . security_context_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 648
+    identifier            转到状态 598
+
+
+State 634
+
+  273 fs_use_def: FSUSETASK identifier . security_context_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 649
+    identifier            转到状态 598
+
+
+State 635
+
+  274 fs_use_def: FSUSETRANS identifier . security_context_def ';'
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 650
+    identifier            转到状态 598
+
+
+State 636
+
+  279 genfs_context_def: GENFSCON . filesystem path '-' identifier security_context_def
+  281                  | GENFSCON . filesystem path '-' '-' $@17 security_context_def
+  282                  | GENFSCON . filesystem path security_context_def
+
+    IDENTIFIER  shift, and go to state 631
+    FILESYSTEM  shift, and go to state 632
+
+    filesystem  转到状态 651
+
+
+State 637
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts . net_contexts opt_dev_contexts
+
+    PORTCON  shift, and go to state 652
+
+    $default  reduce using rule 252 (opt_port_contexts)
+
+    net_contexts       转到状态 653
+    opt_port_contexts  转到状态 654
+    port_contexts      转到状态 655
+    port_context_def   转到状态 656
+
+
+State 638
+
+  275 opt_genfs_contexts: genfs_contexts .
+  278 genfs_contexts: genfs_contexts . genfs_context_def
+
+    GENFSCON  shift, and go to state 636
+
+    $default  reduce using rule 275 (opt_genfs_contexts)
+
+    genfs_context_def  转到状态 657
+
+
+State 639
+
+  277 genfs_contexts: genfs_context_def .
+
+    $default  reduce using rule 277 (genfs_contexts)
+
+
+State 640
+
+  271 fs_uses: fs_uses fs_use_def .
+
+    $default  reduce using rule 271 (fs_uses)
+
+
+State 641
+
+   70 mlsconstraint_def: MLSCONSTRAIN names names cexpr ';' .
+
+    $default  reduce using rule 70 (mlsconstraint_def)
+
+
+State 642
+
+  305 names_push: '{' identifier_list_push . '}'
+  310 identifier_list_push: identifier_list_push . identifier_push
+
+    IDENTIFIER  shift, and go to state 233
+    '}'         shift, and go to state 658
+
+    identifier_push  转到状态 659
+
+
+State 643
+
+  309 identifier_list_push: identifier_push .
+
+    $default  reduce using rule 309 (identifier_list_push)
+
+
+State 644
+
+  308 names_push: tilde_push '{' . identifier_list_push '}'
+
+    IDENTIFIER  shift, and go to state 233
+
+    identifier_list_push  转到状态 660
+    identifier_push       转到状态 643
+
+
+State 645
+
+  307 names_push: tilde_push identifier_push .
+
+    $default  reduce using rule 307 (names_push)
+
+
+State 646
+
+  284 security_context_def: identifier ':' identifier . ':' identifier opt_mls_range_def
+
+    ':'  shift, and go to state 661
+
+
+State 647
+
+  249 fs_context_def: FSCON number number security_context_def . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 662
+    identifier            转到状态 598
+
+
+State 648
+
+  272 fs_use_def: FSUSEXATTR filesystem security_context_def . ';'
+
+    ';'  shift, and go to state 663
+
+
+State 649
+
+  273 fs_use_def: FSUSETASK identifier security_context_def . ';'
+
+    ';'  shift, and go to state 664
+
+
+State 650
+
+  274 fs_use_def: FSUSETRANS identifier security_context_def . ';'
+
+    ';'  shift, and go to state 665
+
+
+State 651
+
+  279 genfs_context_def: GENFSCON filesystem . path '-' identifier security_context_def
+  281                  | GENFSCON filesystem . path '-' '-' $@17 security_context_def
+  282                  | GENFSCON filesystem . path security_context_def
+
+    PATH  shift, and go to state 666
+
+    path  转到状态 667
+
+
+State 652
+
+  255 port_context_def: PORTCON . identifier number security_context_def
+  256                 | PORTCON . identifier number '-' number security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 668
+
+
+State 653
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts . opt_dev_contexts
+
+    PIRQCON       shift, and go to state 669
+    IOMEMCON      shift, and go to state 670
+    IOPORTCON     shift, and go to state 671
+    PCIDEVICECON  shift, and go to state 672
+
+    $default  reduce using rule 232 (opt_dev_contexts)
+
+    opt_dev_contexts    转到状态 673
+    dev_contexts        转到状态 674
+    dev_context_def     转到状态 675
+    pirq_context_def    转到状态 676
+    iomem_context_def   转到状态 677
+    ioport_context_def  转到状态 678
+    pci_context_def     转到状态 679
+
+
+State 654
+
+  250 net_contexts: opt_port_contexts . opt_netif_contexts opt_node_contexts
+
+    NETIFCON  shift, and go to state 680
+
+    $default  reduce using rule 258 (opt_netif_contexts)
+
+    opt_netif_contexts  转到状态 681
+    netif_contexts      转到状态 682
+    netif_context_def   转到状态 683
+
+
+State 655
+
+  251 opt_port_contexts: port_contexts .
+  254 port_contexts: port_contexts . port_context_def
+
+    PORTCON  shift, and go to state 652
+
+    $default  reduce using rule 251 (opt_port_contexts)
+
+    port_context_def  转到状态 684
+
+
+State 656
+
+  253 port_contexts: port_context_def .
+
+    $default  reduce using rule 253 (port_contexts)
+
+
+State 657
+
+  278 genfs_contexts: genfs_contexts genfs_context_def .
+
+    $default  reduce using rule 278 (genfs_contexts)
+
+
+State 658
+
+  305 names_push: '{' identifier_list_push '}' .
+
+    $default  reduce using rule 305 (names_push)
+
+
+State 659
+
+  310 identifier_list_push: identifier_list_push identifier_push .
+
+    $default  reduce using rule 310 (identifier_list_push)
+
+
+State 660
+
+  308 names_push: tilde_push '{' identifier_list_push . '}'
+  310 identifier_list_push: identifier_list_push . identifier_push
+
+    IDENTIFIER  shift, and go to state 233
+    '}'         shift, and go to state 685
+
+    identifier_push  转到状态 659
+
+
+State 661
+
+  284 security_context_def: identifier ':' identifier ':' . identifier opt_mls_range_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 686
+
+
+State 662
+
+  249 fs_context_def: FSCON number number security_context_def security_context_def .
+
+    $default  reduce using rule 249 (fs_context_def)
+
+
+State 663
+
+  272 fs_use_def: FSUSEXATTR filesystem security_context_def ';' .
+
+    $default  reduce using rule 272 (fs_use_def)
+
+
+State 664
+
+  273 fs_use_def: FSUSETASK identifier security_context_def ';' .
+
+    $default  reduce using rule 273 (fs_use_def)
+
+
+State 665
+
+  274 fs_use_def: FSUSETRANS identifier security_context_def ';' .
+
+    $default  reduce using rule 274 (fs_use_def)
+
+
+State 666
+
+  324 path: PATH .
+
+    $default  reduce using rule 324 (path)
+
+
+State 667
+
+  279 genfs_context_def: GENFSCON filesystem path . '-' identifier security_context_def
+  281                  | GENFSCON filesystem path . '-' '-' $@17 security_context_def
+  282                  | GENFSCON filesystem path . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+    '-'         shift, and go to state 687
+
+    security_context_def  转到状态 688
+    identifier            转到状态 598
+
+
+State 668
+
+  255 port_context_def: PORTCON identifier . number security_context_def
+  256                 | PORTCON identifier . number '-' number security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 689
+
+
+State 669
+
+  239 pirq_context_def: PIRQCON . number security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 690
+
+
+State 670
+
+  240 iomem_context_def: IOMEMCON . number security_context_def
+  241                  | IOMEMCON . number '-' number security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 691
+
+
+State 671
+
+  242 ioport_context_def: IOPORTCON . number security_context_def
+  243                   | IOPORTCON . number '-' number security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 692
+
+
+State 672
+
+  244 pci_context_def: PCIDEVICECON . number security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 693
+
+
+State 673
+
+    6 base_policy: $@1 classes initial_sids access_vectors $@2 opt_default_rules opt_mls te_rbac users opt_constraints $@3 initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts .
+
+    $default  reduce using rule 6 (base_policy)
+
+
+State 674
+
+  231 opt_dev_contexts: dev_contexts .
+  234 dev_contexts: dev_contexts . dev_context_def
+
+    PIRQCON       shift, and go to state 669
+    IOMEMCON      shift, and go to state 670
+    IOPORTCON     shift, and go to state 671
+    PCIDEVICECON  shift, and go to state 672
+
+    $default  reduce using rule 231 (opt_dev_contexts)
+
+    dev_context_def     转到状态 694
+    pirq_context_def    转到状态 676
+    iomem_context_def   转到状态 677
+    ioport_context_def  转到状态 678
+    pci_context_def     转到状态 679
+
+
+State 675
+
+  233 dev_contexts: dev_context_def .
+
+    $default  reduce using rule 233 (dev_contexts)
+
+
+State 676
+
+  235 dev_context_def: pirq_context_def .
+
+    $default  reduce using rule 235 (dev_context_def)
+
+
+State 677
+
+  236 dev_context_def: iomem_context_def .
+
+    $default  reduce using rule 236 (dev_context_def)
+
+
+State 678
+
+  237 dev_context_def: ioport_context_def .
+
+    $default  reduce using rule 237 (dev_context_def)
+
+
+State 679
+
+  238 dev_context_def: pci_context_def .
+
+    $default  reduce using rule 238 (dev_context_def)
+
+
+State 680
+
+  261 netif_context_def: NETIFCON . identifier security_context_def security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    identifier  转到状态 695
+
+
+State 681
+
+  250 net_contexts: opt_port_contexts opt_netif_contexts . opt_node_contexts
+
+    NODECON  shift, and go to state 696
+
+    $default  reduce using rule 263 (opt_node_contexts)
+
+    opt_node_contexts  转到状态 697
+    node_contexts      转到状态 698
+    node_context_def   转到状态 699
+
+
+State 682
+
+  257 opt_netif_contexts: netif_contexts .
+  260 netif_contexts: netif_contexts . netif_context_def
+
+    NETIFCON  shift, and go to state 680
+
+    $default  reduce using rule 257 (opt_netif_contexts)
+
+    netif_context_def  转到状态 700
+
+
+State 683
+
+  259 netif_contexts: netif_context_def .
+
+    $default  reduce using rule 259 (netif_contexts)
+
+
+State 684
+
+  254 port_contexts: port_contexts port_context_def .
+
+    $default  reduce using rule 254 (port_contexts)
+
+
+State 685
+
+  308 names_push: tilde_push '{' identifier_list_push '}' .
+
+    $default  reduce using rule 308 (names_push)
+
+
+State 686
+
+  284 security_context_def: identifier ':' identifier ':' identifier . opt_mls_range_def
+
+    ':'  shift, and go to state 701
+
+    $default  reduce using rule 286 (opt_mls_range_def)
+
+    opt_mls_range_def  转到状态 702
+
+
+State 687
+
+  279 genfs_context_def: GENFSCON filesystem path '-' . identifier security_context_def
+  281                  | GENFSCON filesystem path '-' . '-' $@17 security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+    '-'         shift, and go to state 703
+
+    identifier  转到状态 704
+
+
+State 688
+
+  282 genfs_context_def: GENFSCON filesystem path security_context_def .
+
+    $default  reduce using rule 282 (genfs_context_def)
+
+
+State 689
+
+  255 port_context_def: PORTCON identifier number . security_context_def
+  256                 | PORTCON identifier number . '-' number security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+    '-'         shift, and go to state 705
+
+    security_context_def  转到状态 706
+    identifier            转到状态 598
+
+
+State 690
+
+  239 pirq_context_def: PIRQCON number . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 707
+    identifier            转到状态 598
+
+
+State 691
+
+  240 iomem_context_def: IOMEMCON number . security_context_def
+  241                  | IOMEMCON number . '-' number security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+    '-'         shift, and go to state 708
+
+    security_context_def  转到状态 709
+    identifier            转到状态 598
+
+
+State 692
+
+  242 ioport_context_def: IOPORTCON number . security_context_def
+  243                   | IOPORTCON number . '-' number security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+    '-'         shift, and go to state 710
+
+    security_context_def  转到状态 711
+    identifier            转到状态 598
+
+
+State 693
+
+  244 pci_context_def: PCIDEVICECON number . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 712
+    identifier            转到状态 598
+
+
+State 694
+
+  234 dev_contexts: dev_contexts dev_context_def .
+
+    $default  reduce using rule 234 (dev_contexts)
+
+
+State 695
+
+  261 netif_context_def: NETIFCON identifier . security_context_def security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 713
+    identifier            转到状态 598
+
+
+State 696
+
+  266 node_context_def: NODECON . ipv4_addr_def ipv4_addr_def security_context_def
+  267                 | NODECON . ipv6_addr ipv6_addr security_context_def
+
+    IPV4_ADDR  shift, and go to state 72
+    IPV6_ADDR  shift, and go to state 714
+
+    ipv4_addr_def  转到状态 715
+    ipv6_addr      转到状态 716
+
+
+State 697
+
+  250 net_contexts: opt_port_contexts opt_netif_contexts opt_node_contexts .
+
+    $default  reduce using rule 250 (net_contexts)
+
+
+State 698
+
+  262 opt_node_contexts: node_contexts .
+  265 node_contexts: node_contexts . node_context_def
+
+    NODECON  shift, and go to state 696
+
+    $default  reduce using rule 262 (opt_node_contexts)
+
+    node_context_def  转到状态 717
+
+
+State 699
+
+  264 node_contexts: node_context_def .
+
+    $default  reduce using rule 264 (node_contexts)
+
+
+State 700
+
+  260 netif_contexts: netif_contexts netif_context_def .
+
+    $default  reduce using rule 260 (netif_contexts)
+
+
+State 701
+
+  285 opt_mls_range_def: ':' . mls_range_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    mls_range_def  转到状态 718
+    mls_level_def  转到状态 231
+    identifier     转到状态 232
+
+
+State 702
+
+  284 security_context_def: identifier ':' identifier ':' identifier opt_mls_range_def .
+
+    $default  reduce using rule 284 (security_context_def)
+
+
+State 703
+
+  281 genfs_context_def: GENFSCON filesystem path '-' '-' . $@17 security_context_def
+
+    $default  reduce using rule 280 ($@17)
+
+    $@17  转到状态 719
+
+
+State 704
+
+  279 genfs_context_def: GENFSCON filesystem path '-' identifier . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 720
+    identifier            转到状态 598
+
+
+State 705
+
+  256 port_context_def: PORTCON identifier number '-' . number security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 721
+
+
+State 706
+
+  255 port_context_def: PORTCON identifier number security_context_def .
+
+    $default  reduce using rule 255 (port_context_def)
+
+
+State 707
+
+  239 pirq_context_def: PIRQCON number security_context_def .
+
+    $default  reduce using rule 239 (pirq_context_def)
+
+
+State 708
+
+  241 iomem_context_def: IOMEMCON number '-' . number security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 722
+
+
+State 709
+
+  240 iomem_context_def: IOMEMCON number security_context_def .
+
+    $default  reduce using rule 240 (iomem_context_def)
+
+
+State 710
+
+  243 ioport_context_def: IOPORTCON number '-' . number security_context_def
+
+    NUMBER  shift, and go to state 71
+
+    number  转到状态 723
+
+
+State 711
+
+  242 ioport_context_def: IOPORTCON number security_context_def .
+
+    $default  reduce using rule 242 (ioport_context_def)
+
+
+State 712
+
+  244 pci_context_def: PCIDEVICECON number security_context_def .
+
+    $default  reduce using rule 244 (pci_context_def)
+
+
+State 713
+
+  261 netif_context_def: NETIFCON identifier security_context_def . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 724
+    identifier            转到状态 598
+
+
+State 714
+
+  327 ipv6_addr: IPV6_ADDR .
+
+    $default  reduce using rule 327 (ipv6_addr)
+
+
+State 715
+
+  266 node_context_def: NODECON ipv4_addr_def . ipv4_addr_def security_context_def
+
+    IPV4_ADDR  shift, and go to state 72
+
+    ipv4_addr_def  转到状态 725
+
+
+State 716
+
+  267 node_context_def: NODECON ipv6_addr . ipv6_addr security_context_def
+
+    IPV6_ADDR  shift, and go to state 714
+
+    ipv6_addr  转到状态 726
+
+
+State 717
+
+  265 node_contexts: node_contexts node_context_def .
+
+    $default  reduce using rule 265 (node_contexts)
+
+
+State 718
+
+  285 opt_mls_range_def: ':' mls_range_def .
+
+    $default  reduce using rule 285 (opt_mls_range_def)
+
+
+State 719
+
+  281 genfs_context_def: GENFSCON filesystem path '-' '-' $@17 . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 727
+    identifier            转到状态 598
+
+
+State 720
+
+  279 genfs_context_def: GENFSCON filesystem path '-' identifier security_context_def .
+
+    $default  reduce using rule 279 (genfs_context_def)
+
+
+State 721
+
+  256 port_context_def: PORTCON identifier number '-' number . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 728
+    identifier            转到状态 598
+
+
+State 722
+
+  241 iomem_context_def: IOMEMCON number '-' number . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 729
+    identifier            转到状态 598
+
+
+State 723
+
+  243 ioport_context_def: IOPORTCON number '-' number . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 730
+    identifier            转到状态 598
+
+
+State 724
+
+  261 netif_context_def: NETIFCON identifier security_context_def security_context_def .
+
+    $default  reduce using rule 261 (netif_context_def)
+
+
+State 725
+
+  266 node_context_def: NODECON ipv4_addr_def ipv4_addr_def . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 731
+    identifier            转到状态 598
+
+
+State 726
+
+  267 node_context_def: NODECON ipv6_addr ipv6_addr . security_context_def
+
+    IDENTIFIER  shift, and go to state 7
+
+    security_context_def  转到状态 732
+    identifier            转到状态 598
+
+
+State 727
+
+  281 genfs_context_def: GENFSCON filesystem path '-' '-' $@17 security_context_def .
+
+    $default  reduce using rule 281 (genfs_context_def)
+
+
+State 728
+
+  256 port_context_def: PORTCON identifier number '-' number security_context_def .
+
+    $default  reduce using rule 256 (port_context_def)
+
+
+State 729
+
+  241 iomem_context_def: IOMEMCON number '-' number security_context_def .
+
+    $default  reduce using rule 241 (iomem_context_def)
+
+
+State 730
+
+  243 ioport_context_def: IOPORTCON number '-' number security_context_def .
+
+    $default  reduce using rule 243 (ioport_context_def)
+
+
+State 731
+
+  266 node_context_def: NODECON ipv4_addr_def ipv4_addr_def security_context_def .
+
+    $default  reduce using rule 266 (node_context_def)
+
+
+State 732
+
+  267 node_context_def: NODECON ipv6_addr ipv6_addr security_context_def .
+
+    $default  reduce using rule 267 (node_context_def)
